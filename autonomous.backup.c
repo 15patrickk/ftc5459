@@ -1,4 +1,4 @@
-	#pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  HTServo)
+#pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  HTServo)
 #pragma config(Sensor, S2,     front,          sensorI2CCustom)
 #pragma config(Sensor, S3,     back,           sensorI2CCustom)
 #pragma config(Sensor, S4,     frontSonar,     sensorSONAR)
@@ -41,86 +41,6 @@ void driveFor(float rotations, bool direction) {
 	nMotorEncoder[driveL] = nMotorEncoder[driveR] = 0; // not sure if resetting twice helps
 }
 
-// IR code, written mostly by Coach Helms.
-int _dirEnh, _strEnh; // raw values from IR sensor
-
-// IRtask() - continuously polls the IR sensor, breaks on error
-task IRtask() {
-	// set the DSP to the the desired mode (1200 Hz beacon)
-  HTIRS2setDSPMode(back, DSP_1200);
-  while(true) {
-		if (!HTIRS2readEnhanced(back, _dirEnh, _strEnh)) {
-    	break; // I2C read error occurred
-    }
-		wait1Msec(100); // wait 100ms before polling again
-  }
-}
-
-// checkBeacon() - checks if there is a beacon present at the current location
-bool checkBeacon() {
-	bool found = false; // assume we didn't find the beacon
-
-	float irlocation = 0;
-  int numSamples = 5;
-	// take IR_SAMPLES from our IR sensor (100ms) each
-	for (int i = 0; i < numSamples; i++) {
-		irlocation += _dirEnh;
-		wait1Msec(100);
-	}
-	irlocation /= numSamples;
-
-	if (irlocation >= 4.85 && irlocation <= 5.5) {
-		// we found the IR sensor, and we are lined up
-	  found = true;
-	}
-
-	return found;
-}
-
-// ramp() - drives to the ramp
-void ramp() {
-	motor[lift] = 0;
-	// in theory: while the robot is more than 30 away from the wall, drive forward
-	while(SensorValue[frontSonar] > 12) {
-		motor[driveL] = motor[driveR] = 50;
-		motor[lift] = 60;
-	}
-	PlayTone(2500, 100);
-	motor[driveL] = motor[driveR] = 0; // STOP once we get near the wall
-	wait1Msec(500);
-	nMotorEncoder[driveL] = nMotorEncoder[driveR] = 0;
-	motor[lift] = -50;
-	wait1Msec(300);
-	motor[lift] = 0;
-	PlayTone(1250, 150);
-	wait1Msec(250);
-
-	// turn ~90 degrees right
-	while(nMotorEncoder[driveL] < 1700) {
-		motor[driveL] = 60;
-		motor[driveR] = -30;
-	}
-	motor[driveL] = motor[driveR] = 0;
-	wait1Msec(500);
-
-	// in theory: drive forward enough to get to the ramp
-	driveFor(2.2, true);
-	PlayTone(1750, 100);
-
-	// in theory: turn 90 degrees right
-	while(nMotorEncoder[driveL] < 2600) {
-		motor[driveL] = 60;
-		motor[driveR] = -30;
-	}
-	motor[driveL] = motor[driveR] = 0;
-	wait1Msec(500);
-	nMotorEncoder[driveL] = nMotorEncoder[driveR] = 0;
-	// in theory: drive far enough to get completely on the ramp
-	while(nMotorEncoder[driveL] <= 4464) { // 3.25 revs
-		motor[driveL] = motor[driveR] = 60;
-	}
-	motor[driveL] = motor[driveR] = 0;
-}
 // main() - the main task for the robot, basically an infinite loop.
 // This must be the last routine in the file.
 // At the end of the autonomous period, the FMS will autonmatically halt execution.
@@ -156,50 +76,18 @@ task main() {
 	// initialization
 	nMotorEncoder[driveL] = nMotorEncoder[driveR] = 0;
 
-	StartTask(IRtask); // start polling the IR sensors
+	// stage 1: drive forward
+	driveFor(1.5, true);
 
-	// stage 1: run the lift up (wait empirically determined)
-	motor[lift] = 75;
-	wait1Msec(2500);
-	motor[lift] = 0;
+	// stage 2: turn left
+	while(nMotorEncoder[driveR] < 2520) {
+		motor[driveR] = 60;
+		motor[driveL] = -30;
+	}
 
-	// stage 2: drive to the crates and check the IR values
-	// driveFor values empirically determined (check these?)
-	driveFor(1.6, true);
-	PlayTone(400, 100); // DEBUG
-	if (checkBeacon()) { // found at 1st crate
-		// TODO: DRY this
-		servo[door] = 255;
-		motor[lift] = 60;
-		wait1Msec(1000);
-		ramp();
-	}
-	else { // not at 1st crate
-		driveFor(0.75, true); // drive to 2nd crate
-		PlayTone(800, 150); // DEBUG
-		if (checkBeacon()) { // found at 2nd crate
-			servo[door] = 255;
-			motor[lift] = 60;
-			wait1Msec(1000);
-			ramp();
-		}
-		else { // not at 2nd crate
-			driveFor(1.3, true); // longer to move past the pendulum's midsection
-			PlayTone(1200, 200); // DEBUG
-			if (checkBeacon()) { // found at 3rd crate
-				servo[door] = 255;
-				motor[lift] = 60;
-				wait1Msec(1000);
-				ramp();
-			}
-			else { // not at 3rd crate, therefore must be at 4th (or we missed the beacon)
-			  driveFor(0.70, true);
-			  PlayTone(1600, 250);
-			  servo[door] = 255;
-			  motor[lift] = 60;
-			  wait1Msec(1000);
-			  ramp();
-			}
-		}
-	}
+	// stage 3: drive straight
+	driveFor(2, true);
+
+	// stage 4: stop
+	motor[driveL] = motor[driveR] = 0;
 }
