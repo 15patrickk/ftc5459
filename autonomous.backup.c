@@ -77,16 +77,21 @@ task main() {
 	nMotorEncoder[driveL] = nMotorEncoder[driveR] = 0;
 
 	// stage 1: drive forward
-	driveFor(1.5, true);
+	driveFor(2.2, true);
 
 	// stage 2: turn left
-	while(nMotorEncoder[driveR] < 2520) {
+	while(nMotorEncoder[driveR] < 2200) {
 		motor[driveR] = 60;
 		motor[driveL] = -30;
 	}
 
+	nMotorEncoder[driveL] = nMotorEncoder[driveR] = 0; //reset encoders
+
 	// stage 3: drive straight
-	driveFor(2, true);
+	while(nMotorEncoder[driveR] < 4320) {
+		motor[driveR] = 60;
+		motor[driveL] = 60;
+	}
 
 	// stage 4: stop
 	motor[driveL] = motor[driveR] = 0;
