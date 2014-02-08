@@ -21,9 +21,6 @@
 // discreteButtons() - handles all the buttons that manipulate discrete variables.
 // We need this to reduce jitter with these buttons while not lagging the main task.
 task discreteButtons() {
-	// initialization: set the servos/variables
-	servo[door] = 0;
-
 	while(true) {
 		// door control: if the button is pressed, toggle the door
 		if (joy1Btn(6) || joy2Btn(6)) {
@@ -40,28 +37,26 @@ task discreteButtons() {
 task main() {
 	waitForStart(); // wait for start of tele-op phase
 
-	// initialization: set all motors to zero power (do we really need this?) No you don't
-	motor[driveL] = 0;
-	motor[driveR] = 0;
-	motor[lift] = 0;
-	motor[conveyor] = 0;
-
 	StartTask(discreteButtons); // start the discrete button handler
 
-	// the main loop - handles all the continuous controls on the joystick
+	// the main loop - handles all the continuous controls on the gamepad
 	while(true) {
-		getJoystickSettings(joystick); // updates joystick info every 50-100ms
+		getJoystickSettings(joystick); // updates gamepad info every 50-100ms
 
-		// drivetrain: if the joystick is outside the dead zone, set the corresponding motor to the value; else 0
+		// JOYSTICKS - different between gamepad 1 and 2
+
+		// drivetrain (gamepad 1): if the joystick is outside the dead zone, set the corresponding motor to the value; else 0
 		// TODO: get a more sophisticated model
 		motor[driveL] = abs(joystick.joy1_y1) > 5 ? joystick.joy1_y1 : 0;
 		motor[driveR] = abs(joystick.joy1_y2) > 5 ? joystick.joy1_y2 : 0;
 
-		// power lifters: same as above
+		// power lifters (gamepad 2): same as above
 		motor[powerLifterL] = abs(joystick.joy2_y1) > 5 ? joystick.joy2_y1 : 0;
 		motor[powerLifterR] = abs(joystick.joy2_y2) > 5 ? joystick.joy2_y2 : 0;
 
-		// lift control: run the lift in forward/reverse if the suitable buttons are pressed
+		// BUTTONS - common across both gamepads
+
+		// lift control: run the lift in forward/reverse
 		// this is a continuous control, thus it doesn't belong in discreteButtons()
 		/* the nested ternary statement is the equivalent of saying:
 			if the up button (5) is pressed, raise the lift. else...
@@ -70,8 +65,13 @@ task main() {
 		*/
 		motor[lift] = joy1Btn(5) || joy2Btn(5) ? 75 : joy1Btn(7) || joy2Btn(7) ? -30 : 0;
 
-		// conveyor control: if the button is pressed, run the conveyor
+		// conveyor control: if the buttons are pressed, run the conveyor in the corresponding direction
 		// since this is a continuous button, it doesn't belong in discreteButtons()
-		motor[conveyor] = joy1Btn(8) ? 75 : joy1Btn(3) ? -75 : 0;
+		/* the nested ternary statement is the equivalent of saying:
+			if the up button (8) is pressed, run the conveyor. else...
+				if the down button (3) is pressed, lower the lift. else...
+					set the motor to zero.
+		*/
+		motor[conveyor] = joy1Btn(8) || joy2Btn(8) ? 75 : joy1Btn(3) || joy2Btn(3) ? -75 : 0;
 	}
 }
