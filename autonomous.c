@@ -1,12 +1,14 @@
 #pragma config(Hubs,  S1, HTServo,  HTMotor,  none,     none)
 #pragma config(Hubs,  S2, HTMotor,  HTMotor,  none,     none)
+#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S2,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S3,     back,           sensorI2CCustom)
 #pragma config(Sensor, S4,     frontSonar,     sensorSONAR)
 #pragma config(Motor,  mtr_S1_C2_1,     conveyor,      tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_2,     lift,          tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S2_C1_1,     driveL,        tmotorTetrix, openLoop, reversed, encoder)
+#pragma config(Motor,  mtr_S2_C1_1,     driveL,        tmotorTetrix, PIDControl, reversed, encoder)
 #pragma config(Motor,  mtr_S2_C1_2,     powerLifterL,  tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S2_C2_1,     driveR,        tmotorTetrix, openLoop, encoder)
+#pragma config(Motor,  mtr_S2_C2_1,     driveR,        tmotorTetrix, PIDControl, encoder)
 #pragma config(Motor,  mtr_S2_C2_2,     powerLifterR,  tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S1_C1_1,    door,                 tServoStandard)
 #pragma config(Servo,  srvo_S1_C1_2,    servo2,               tServoNone)
@@ -79,19 +81,16 @@ bool checkBeacon() {
 
 // ramp() - drives to the ramp
 void ramp() {
-	// motor[lift] = 0;
 	servo[door] = 0;
-	// in theory: while the robot is more than 30 away from the wall, drive forward
-	while(SensorValue[frontSonar] > 12) {
+	// in theory: while the robot is more than 10 away from the wall, drive forward
+	while(SensorValue[frontSonar] > 10) {
 		motor[driveL] = motor[driveR] = 50;
-		motor[lift] = 60;
+		motor[lift] = 50;
 	}
 	PlayTone(2500, 100);
 	motor[driveL] = motor[driveR] = 0; // STOP once we get near the wall
-	wait1Msec(500);
 	nMotorEncoder[driveL] = nMotorEncoder[driveR] = 0;
-	PlayTone(1250, 150);
-	wait1Msec(250);
+	wait1Msec(500);
 
 	// turn ~90 degrees right
 	while(nMotorEncoder[driveL] < 1700) {
@@ -102,16 +101,17 @@ void ramp() {
 	wait1Msec(500);
 
 	// run lift down
-	motor[lift] = -40;
-	wait1Msec(500);
+	motor[lift] = -20;
+	wait1Msec(750);
 	motor[lift] = 0;
 
 	// in theory: drive forward enough to get to the ramp
-	driveFor(2.2, true);
+	driveFor(2.25, true);
 	PlayTone(1750, 100);
+	wait1Msec(500);
 
-	// in theory: turn 90 degrees right
-	while(nMotorEncoder[driveL] < 2600) {
+	// in theory: turn 90 degrees right (face ramp)
+	while(nMotorEncoder[driveL] < 2300) {
 		motor[driveL] = 60;
 		motor[driveR] = -30;
 	}
@@ -156,6 +156,11 @@ void ramp() {
 task main() {
 	waitForStart(); // wait for start of autonomous
 
+	// stage 1.5: wait for our alliance partner to get out of the way
+	PlayTone(600, 600);
+	wait1Msec(6000); // wait for our alliance partner to do something (6sec for ashbots)
+
+
 	// initialization
 	nMotorEncoder[driveL] = nMotorEncoder[driveR] = 0;
 
@@ -163,12 +168,13 @@ task main() {
 
 	// stage 1: run the lift up (wait empirically determined)
 	motor[lift] = 75;
-	wait1Msec(2500);
+	wait1Msec(2200);
 	motor[lift] = 0;
+
 
 	// stage 2: drive to the crates and check the IR values
 	// driveFor values empirically determined (check these?)
-	driveFor(1.6, true);
+	driveFor(1.4, true);
 	PlayTone(400, 100); // DEBUG
 	if (checkBeacon()) { // found at 1st crate
 		// TODO: DRY this
@@ -180,7 +186,7 @@ task main() {
 		ramp();
 	}
 	else { // not at 1st crate
-		driveFor(0.75, true); // drive to 2nd crate
+		driveFor(0.8, true); // drive to 2nd crate
 		PlayTone(800, 150); // DEBUG
 		if (checkBeacon()) { // found at 2nd crate
 			servo[door] = 255;
@@ -202,7 +208,7 @@ task main() {
 				ramp();
 			}
 			else { // not at 3rd crate, therefore must be at 4th (or we missed the beacon)
-			  driveFor(0.70, true);
+			  driveFor(0.80, true);
 			  PlayTone(1600, 250);
 			  servo[door] = 255;
 			  motor[lift] = 60;

@@ -1,5 +1,7 @@
 #pragma config(Hubs,  S1, HTServo,  HTMotor,  none,     none)
 #pragma config(Hubs,  S2, HTMotor,  HTMotor,  none,     none)
+#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S2,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S3,     back,           sensorI2CCustom)
 #pragma config(Sensor, S4,     frontSonar,     sensorSONAR)
 #pragma config(Motor,  mtr_S1_C2_1,     conveyor,      tmotorTetrix, openLoop)
@@ -21,6 +23,7 @@
 // discreteButtons() - handles all the buttons that manipulate discrete variables.
 // We need this to reduce jitter with these buttons while not lagging the main task.
 task discreteButtons() {
+	servo[door] = 0; // initialization; fixes twitch on first press
 	while(true) {
 		// door control: if the button is pressed, toggle the door
 		if (joy1Btn(6) || joy2Btn(6)) {
@@ -63,7 +66,7 @@ task main() {
 				if the down button (7) is pressed, lower the lift. else...
 					set the motor to zero.
 		*/
-		motor[lift] = joy1Btn(5) || joy2Btn(5) ? 75 : joy1Btn(7) || joy2Btn(7) ? -30 : 0;
+		motor[lift] = joy1Btn(5) || joy2Btn(5) ? 60 : joy1Btn(7) || joy2Btn(7) ? -20 : 0;
 
 		// conveyor control: if the buttons are pressed, run the conveyor in the corresponding direction
 		// since this is a continuous button, it doesn't belong in discreteButtons()
@@ -73,5 +76,8 @@ task main() {
 					set the motor to zero.
 		*/
 		motor[conveyor] = joy1Btn(8) || joy2Btn(8) ? 75 : joy1Btn(3) || joy2Btn(3) ? -75 : 0;
+
+		// beep: play a sound if this button is pressed
+		if (joy1Btn(2) || joy2Btn(2)) { PlayTone(1000, 2); }
 	}
 }
