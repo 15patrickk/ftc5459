@@ -7,9 +7,9 @@
 #pragma config(Motor,  mtr_S1_C2_1,     conveyor,      tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_2,     lift,          tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C1_1,     driveL,        tmotorTetrix, openLoop, reversed, encoder)
-#pragma config(Motor,  mtr_S2_C1_2,     powerLifterL,  tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S2_C1_2,     powerLifters,  tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S2_C2_1,     driveR,        tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S2_C2_2,     powerLifterR,  tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S2_C2_2,     motorI,        tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S1_C1_1,    door,                 tServoStandard)
 #pragma config(Servo,  srvo_S1_C1_2,    servo2,               tServoNone)
 #pragma config(Servo,  srvo_S1_C1_3,    servo3,               tServoNone)
@@ -54,8 +54,7 @@ task main() {
 		motor[driveR] = abs(joystick.joy1_y2) > 5 ? joystick.joy1_y2 : 0;
 
 		// power lifters (gamepad 2): same as above
-		motor[powerLifterL] = abs(joystick.joy2_y1) > 5 ? joystick.joy2_y1 : 0;
-		motor[powerLifterR] = abs(joystick.joy2_y2) > 5 ? joystick.joy2_y2 : 0;
+		motor[powerLifters] = abs(joystick.joy2_y1) > 5 ? joystick.joy2_y1 : 0;
 
 		// BUTTONS - common across both gamepads
 
