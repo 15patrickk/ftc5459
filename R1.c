@@ -1,17 +1,17 @@
-#pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  HTServo)
-#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
-#pragma config(Sensor, S3,     IRsensor,       sensorI2CCustom)
-#pragma config(Motor,  mtr_S1_C1_1,     driveL,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C1_2,     driveR,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C2_1,     collector,     tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C2_2,     conveyor,      tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C3_1,     upper,         tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C3_2,     lower,         tmotorTetrix, openLoop)
-#pragma config(Servo,  srvo_S1_C4_1,    door,                 tServoStandard)
-// above copy-pasted from teleop.c, valid 2014-10-30
+#pragma config(Hubs,  S4, HTServo,  HTMotor,  HTMotor,  HTMotor)
+#pragma config(Sensor, S1,     IRsensor,       sensorHiTechnicIRSeeker1200)
+#pragma config(Sensor, S4,     ,               sensorI2CMuxController)
+#pragma config(Motor,  mtr_S4_C2_1,     driveR,        tmotorTetrix, openLoop, reversed, encoder)
+#pragma config(Motor,  mtr_S4_C2_2,     driveL,        tmotorTetrix, openLoop, encoder)
+#pragma config(Motor,  mtr_S4_C3_1,     liftLower,     tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S4_C3_2,     liftUpper,     tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S4_C4_1,     conveyor,      tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S4_C4_2,     collector,     tmotorTetrix, openLoop)
+#pragma config(Servo,  srvo_S4_C1_1,    door,                 tServoStandard)
+// above copy-pasted from teleop.c, valid 2014-11-15
 // template copy-pasted, valid 2014-10-30
 
-// R1 autonomous - start from ramp, score in tube
+// R1 autonomous - roll off ramp and stop
 
 #include "skooch.c" // include our common library
 #include "JoystickDriver.c" // handles the FMS
@@ -22,5 +22,5 @@ task main() {
 
 	waitForStart(); // wait for FMS to start autonomous
 
-	startTask(IRtask); // start polling the IR sensors
+	drive(2, FWD);
 }
