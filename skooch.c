@@ -4,6 +4,7 @@
     - drive motors are named "driveL" and "driveR"
     - drive motors are set so that (+) moves the robot forward and (-) backwards
     - the IR sensor is named "IRsensor"
+    - the gyro sensor is named "GYROsensor"
 */
 
 // include all the drivers we need. right now this file is manually generated.
@@ -13,9 +14,11 @@
 #define FWD true
 #define BACK false
 #define TETRIX_ROTATION_RATIO 1440
+#define GYRO_POLL_RATE 5 // in milliseconds
 
 // GLOBAL VARIABLES are necessary for passing pollable sensor values
 int IR_dir, IR_str;
+float GYRO_vel, GYRO_head;
 
 // TASK IRtask() - continuously polls the IR sensor; breaks on error
 task IRtask() {
@@ -24,6 +27,16 @@ task IRtask() {
   while(true) {
 		if (!HTIRS2readEnhanced(IRsensor, IR_dir, IR_str)) { break; } // break on I2C err
 		wait1Msec(100); // wait 100ms before polling again
+  }
+}
+
+task GYROtask() {
+	HTGYROstartCal(GYROsensor); // calibrate the gyro
+	while(true) {
+  	wait1Msec(GYRO_POLL_RATE); // wait to poll the gyro
+    GYRO_vel = HTGYROreadRot(GYROsensor); // read the gyro
+    // get new heading: calculate angular displacement and add to the old heading
+    GYRO_head += GYRO_vel * GYRO_POLL_RATE / 1000;
   }
 }
 
@@ -53,7 +66,7 @@ void drive(float rotations, bool direction) {
 	int target = rotations * TETRIX_ROTATION_RATIO;
 	if (direction) { // forward
 		while(nMotorEncoder[driveL] <= target || nMotorEncoder[driveR] <= target) {
-			motor[driveL] = motor[driveR] = 30;
+			motor[driveL] = motor[driveR] = 70;
 		}
 		motor[driveL] = motor[driveR] = 0;
 	}
@@ -65,4 +78,16 @@ void drive(float rotations, bool direction) {
 	}
 	motor[driveL] = motor[driveR] = 0;
 	nMotorEncoder[driveL] = nMotorEncoder[driveR] = 0;
+}
+
+// turn(degrees) - given degrees (+ is CW, - is CCW), use gyroscope to turn
+void turn(float degrees) {
+	GYRO_head = 0; // reset to combat drift
+	displayBigTextLine(2, "%2.2f", GYRO_head);
+	float direction = sgn(degrees) == 1 ? 1 : -1; // set direction correctly
+	while(GYRO_head <= abs(degrees)){ // until we
+		motor[driveL] = direction * 30;
+		motor[driveR] = direction * -30;
+	}
+	motor[driveL] = motor[driveR] = 0;
 }
