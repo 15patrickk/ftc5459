@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.util.Range; // for scaling
 
 public class TestBotHardware extends OpMode {
 
-	DCMotorController drive_controller_left, drive_controller_right;
-	DCMotor drive_left_front, drive_left_back, drive_right_front, drive_right_back;
+	DcMotorController drive_controller_left, drive_controller_right;
+	DcMotor drive_left_front, drive_left_back, drive_right_front, drive_right_back;
 	LegacyModule Legacy;
 
     public TestBotHardware () {}
@@ -1017,8 +1017,8 @@ public class TestBotHardware extends OpMode {
     /**
      * Manage the aspects of the left drive motor.
      */
-    private DcMotor drive_left_front;
-    private DcMotor drive_left_back;
+   // private DcMotor drive_left_front;
+   // private DcMotor drive_left_back;
 
     //--------------------------------------------------------------------------
     //
@@ -1027,6 +1027,6 @@ public class TestBotHardware extends OpMode {
     /**
      * Manage the aspects of the right drive motor.
      */
-    private DcMotor drive_right_front;
-    private DcMotor drive_left_back;
+  //  private DcMotor drive_right_front;
+  //  private DcMotor drive_left_back;
 } // PushBotHardware

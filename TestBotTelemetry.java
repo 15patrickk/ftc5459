@@ -80,7 +80,7 @@ public class TestBotTelemetry extends TestBotHardware
         telemetry.addData
             ( "01"
             , "Left Drive F: "
-                + drive_left_front_drive_power ()
+                + drive_left_front_power ()
                 + ", "
                 + left_front_encoder_count ()
             );
