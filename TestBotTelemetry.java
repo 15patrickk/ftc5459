@@ -2,12 +2,12 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 //------------------------------------------------------------------------------
 //
-// PushBotTelemetry
+// TestBotTelemetry
 //
 /**
- * Provide telemetry provided by the PushBotHardware class.
+ * Provide telemetry provided by the TestBotHardware class.
  *
- * Insert this class between a custom op-mode and the PushBotHardware class to
+ * Insert this class between a custom op-mode and the TestBotHardware class to
  * display telemetry available from the hardware class.
  *
  * @author SSI Robotics
@@ -33,19 +33,19 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
  *     10 - The value of gamepad 1's left trigger value.
  *     11 - The value of gamepad 1's right trigger value.
  */
-public class PushBotTelemetry extends PushBotHardware
+public class TestBotTelemetry extends TestBotHardware
 
 {
     //--------------------------------------------------------------------------
     //
-    // PushBotTelemetry
+    // TestBotTelemetry
     //
     /**
      * Construct the class.
      *
      * The system calls this member when the class is instantiated.
      */
-    public PushBotTelemetry ()
+    public TestBotTelemetry ()
 
     {
         //
@@ -58,7 +58,7 @@ public class PushBotTelemetry extends PushBotHardware
         //
         // All via self-construction.
 
-    } // PushBotTelemetry
+    } // TestBotTelemetry
 
     //--------------------------------------------------------------------------
     //
@@ -79,27 +79,32 @@ public class PushBotTelemetry extends PushBotHardware
         //
         telemetry.addData
             ( "01"
-            , "Left Drive: "
-                + a_left_drive_power ()
+            , "Left Drive F: "
+                + drive_left_front_drive_power ()
                 + ", "
-                + a_left_encoder_count ()
+                + left_front_encoder_count ()
             );
         telemetry.addData
             ( "02"
-            , "Right Drive: "
-                + a_right_drive_power ()
+            , "Right Drive F: "
+                + drive_right_front_power ()
                 + ", "
-                + a_right_encoder_count ()
+                + right_front_encoder_count ()
             );
         telemetry.addData
             ( "03"
-            , "Left Arm: " + a_left_arm_power ()
+            , "Left Drive B: "
+                + drive_left_back_power ()
+                + ", "
+                + left_back_encoder_count ()
             );
         telemetry.addData
             ( "04"
-            , "Hand Position: " + a_hand_position ()
+            , "Right Drive B: "
+                + drive_right_back_power ()
+                + ", "
+                + right_back_encoder_count ()
             );
-
     } // update_telemetry
 
     //--------------------------------------------------------------------------
@@ -153,4 +158,4 @@ public class PushBotTelemetry extends PushBotHardware
 
     } // set_error_message
 
-} // PushBotTelemetry
+} // TestBotTelemetry
