@@ -22,9 +22,7 @@ import com.qualcomm.robotcore.util.Range;
  * @author SSI Robotics
  * @version 2015-08-13-20-04
  */
-public class PushBotHardware extends OpMode
-
-{
+public class PushBotHardware extends OpMode{
     //--------------------------------------------------------------------------
     //
     // PushBotHardware
