@@ -1,10 +1,13 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.ftcrobotcontroller.opmodes.AutonomousBase5459;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.ftcrobotcontroller.opmodes.Teleop5459;
 import com.qualcomm.robotcore.hardware.DcMotorController;
-//import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.GyroSensor;
+import java.lang.Math;
 
 import android.hardware.SensorManager;
 import android.hardware.Sensor;
@@ -15,7 +18,47 @@ public class GyroAuto extends AutonomousBase5459 {
 	public GyroAuto () {}
 
 	GyroSensor gyro;
-	float gyro_rotations;
+	double gyro_rotations;
+
+	//PID
+	long lastTime;
+	double Input, Output, Setpoint;
+	double errSum, lastInput;
+	double kp, ki, kd;
+	int SampleTime = 1000; //**
+
+	void PID() {
+		long now = System.currentTimeMillis();
+		int timeChange = ((int)now - (int)lastTime);
+		if(timeChange >= SampleTime) {
+			double error = Setpoint - Input; //error
+			errSum += error;
+			double dInput = (Input - lastInput);
+
+			Output = kp * error + ki * errSum  - kd * dInput;
+
+			lastInput = Input;
+			lastTime = now;
+		}
+	}
+
+	void Tune(double Kp, double Ki, double Kd) {
+		double SampleTimeInSec = ((double)SampleTime/1000);
+		kp = Kp;
+		ki = Ki * SampleTimeInSec;
+		kd = Kd / SampleTimeInSec;
+	}
+
+	void SetSampleTime(int NewSampleTime) {
+		if (NewSampleTime > 0) {
+			double ratio = (double)NewSampleTime / (double)SampleTime;
+			ki *= ratio;
+			kd /= ratio;
+			SampleTime = (int)NewSampleTime;
+		}
+
+
+	}
 
 	/*
 	List<Sensor> deviceSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
@@ -29,7 +72,22 @@ public class GyroAuto extends AutonomousBase5459 {
 	private float timestamp;
 	*/
 
-	start();
+	public void turn_gyro(double angle, double power) {
+		Input = 0; // reset Gyro
+		double angle_rad = (angle*2*Math.PI)/360;
+		while(Output < Math.abs(angle_rad)) {
+			drive_left_front.setPower(Math.signum(angle)*power);
+			drive_left_back.setPower(Math.signum(angle)*power);
+			drive_right_front.setPower(-1*Math.signum(angle)*power);
+			drive_right_back.setPower(-1*Math.signum(angle)*power);
+		}
+		drive_left_front.setPower(0);
+		drive_left_back.setPower(0);
+		drive_right_front.setPower(0);
+		drive_right_back.setPower(0);
+	}
+
+	//start();
 
 	@Override
 	public void init() {
@@ -45,6 +103,10 @@ public class GyroAuto extends AutonomousBase5459 {
         gyro = hardwareMap.gyroSensor.get("Gyro");
         gyro_rotations = 0;
 
+		Input = 0;
+		Setpoint = 0;
+		Tune(1, 1, 1);
+		SetSampleTime(100);
         /*
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         gyro = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -82,10 +144,16 @@ public class GyroAuto extends AutonomousBase5459 {
 		//rotationCurrent = rotationCurrent * deltaRotationMatrix;
 	}
 */
+
+	//Dont ovveride loop here
+
+	/*
 	@Override
 	public void loop() {
-		gyro_rotations = gyro.getRotation();
-
+		Input = gyro.getRotation();
+		PID();
+		turn_gyro(360, 50);
 	}
+	*/
 	
 }

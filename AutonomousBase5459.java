@@ -1,10 +1,14 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.ftcrobotcontroller.opmodes.Teleop5459;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+import java.lang.Math;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 
 import android.hardware.SensorManager;
 import android.hardware.Sensor;
@@ -18,15 +22,32 @@ public class AutonomousBase5459 extends OpMode {
     DcMotor drive_left_back;
     DcMotor drive_right_front;
     DcMotor drive_right_back;
+    int EREVOLUTIONS;
+    int CORRECTION;
+    Servo servoleft;
+    Servo servoright;
 
     String ml1 = Teleop5459.ML1;
     String ml2 = Teleop5459.ML2;
     String mr1 = Teleop5459.MR1;
     String mr2 = Teleop5459.MR2;
+    String sl = Teleop5459.SL;
+    String sr = Teleop5459.SR;
+
     boolean check;
 
     //private SensorManager mSensorManager;
     //private Sensor mSensor;
+
+    GyroSensor gyro;
+    double gyro_rotations;
+
+    //PID
+    long lastTime;
+    double Input, Output, Setpoint;
+    double errSum, lastInput;
+    double kp, ki, kd;
+    int SampleTime = 1000; //**
 
 
     public AutonomousBase5459() {
@@ -48,6 +69,14 @@ public class AutonomousBase5459 extends OpMode {
         drive_right_front = hardwareMap.dcMotor.get(mr1);
         drive_right_back = hardwareMap.dcMotor.get(mr2);
 
+        gyro = hardwareMap.gyroSensor.get("Gyro");
+        gyro_rotations = 0;
+
+        Input = 0;
+        Setpoint = 0;
+        Tune(1, 1, 1);
+        SetSampleTime(100);
+
         //mSensorManager = this.getSystemService(Context.SENSOR_SERVICE);
         //mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
     }
@@ -57,13 +86,37 @@ public class AutonomousBase5459 extends OpMode {
 
     }
 
+    public void Turn (float rad, float speed) {
+        float leftpower;
+        float rightpower;
+        EREVOLUTIONS = 1120;
+        CORRECTION = 1;
+        float portion = rad*9;
+        double rad_wheel = (portion/(8*3.14159));
+        double encoder_target = rad_wheel*EREVOLUTIONS*CORRECTION; // see bottom
+
+        while(EncoderCount(drive_left_back) < encoder_target) {
+            leftpower = Math.signum(rad)*speed;
+            rightpower = -1*Math.signum(rad)*speed;
+
+            drive_left_front.setPower(leftpower);
+            drive_left_back.setPower(leftpower);
+            drive_right_front.setPower(rightpower);
+            drive_right_back.setPower(rightpower);
+        }
+
+       drive_left_front.setPower(0.0f);
+       drive_right_front.setPower(0.0f);
+       drive_left_back.setPower(0.0f);
+       drive_right_back.setPower(0.0f);
+        ResetAllEncoders();
+    }
+
    //AFTER THIS COPY AND PASTED FROM TESTBOTHARDWARE ON SATURDAY OCTOBER 31ST SCARRY RIGHT?
     //BOOM
     //BOOM
     //BOOM
 
-
-    // warning?
     boolean a_warning_generated () {
         return v_warning_generated;
     } // a_warning_generated
@@ -155,15 +208,16 @@ public class AutonomousBase5459 extends OpMode {
 
     public void run_using_encoders () {
 
-        if (drive_left_front != null) {
-            drive_left_front.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        }
+        //if (drive_left_front != null) {
+        //    drive_left_front.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);}
+
         if (drive_left_back != null) {
             drive_left_back.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         }
-        if (drive_right_front != null) {
-            drive_right_front.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
-        }
+
+        //if (drive_right_front != null) {
+        //    drive_right_front.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);}
+
         if (drive_right_back != null) {
             drive_right_back.setChannelMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
         }
@@ -183,9 +237,9 @@ public class AutonomousBase5459 extends OpMode {
 
     //turn off All encoders.
     public void run_without_encoders () {
-        run_without_drive_encoder(drive_left_front);
+        //run_without_drive_encoder(drive_left_front);
         run_without_drive_encoder(drive_left_back);
-        run_without_drive_encoder(drive_right_front);
+        //run_without_drive_encoder(drive_right_front);
         run_without_drive_encoder(drive_right_back);
     }
 
@@ -199,9 +253,9 @@ public class AutonomousBase5459 extends OpMode {
 
 
     public void ResetAllEncoders () {
-        ResetMotorEncoder(drive_left_front);
+        //ResetMotorEncoder(drive_left_front);
         ResetMotorEncoder(drive_left_back);
-        ResetMotorEncoder(drive_right_front);
+        //ResetMotorEncoder(drive_right_front);
         ResetMotorEncoder(drive_right_back);
     }
 
@@ -214,7 +268,7 @@ public class AutonomousBase5459 extends OpMode {
         return l_return;
     }
 
-    boolean has_left_front_encoder_reached (double p_count) {
+    public boolean HasLeftFrontReached (double p_count) {
         boolean l_return = false;
 
         if (drive_left_front != null) {
@@ -226,7 +280,7 @@ public class AutonomousBase5459 extends OpMode {
         return l_return;
     }
 
-    boolean has_left_back_encoder_reached (double p_count) {
+    public boolean HasLeftBackReached (double p_count) {
         boolean l_return = false;
 
         if (drive_left_back != null) {
@@ -239,7 +293,7 @@ public class AutonomousBase5459 extends OpMode {
     }
 
 
-    boolean has_right_front_encoder_reached (double p_count) {
+    public boolean HasRightFrontReached (double p_count) {
         boolean l_return = false;
 
         if (drive_right_front != null) {
@@ -253,7 +307,7 @@ public class AutonomousBase5459 extends OpMode {
     }
 
 
-    boolean has_right_back_encoder_reached (double p_count) {
+    public boolean HasRightBackReached (double p_count) {
         boolean l_return = false;
 
         if (drive_right_back != null) {
@@ -266,13 +320,11 @@ public class AutonomousBase5459 extends OpMode {
     }
 
 
-    boolean have_drive_encoders_reached ( double p_left_count, double p_right_count) {
+    boolean DriveEncodersReached ( double p_left_count, double p_right_count) {
 
         boolean l_return = false;
 
-        if (has_left_front_encoder_reached (p_left_count) && has_left_back_encoder_reached (p_left_count) &&
-            has_right_front_encoder_reached (p_right_count) && has_right_back_encoder_reached (p_right_count))
-        {
+        if (HasLeftBackReached (p_left_count) && HasRightBackReached (p_right_count)) {
 
             l_return = true;
         }
@@ -290,7 +342,7 @@ public class AutonomousBase5459 extends OpMode {
             check = true;
         }
         // TODO: 11/19/2015  just a place holder
-        if (have_drive_encoders_reached (p_left_count, p_right_count))
+        if (DriveEncodersReached (p_left_count, p_right_count))
         {
             ResetAllEncoders();
             set_drive_power (0.0f, 0.0f);
@@ -367,6 +419,54 @@ public class AutonomousBase5459 extends OpMode {
      * Store a message to the user if one has been generated.
      */
     private String v_warning_message;
+
+    // CORRECTED GYRO OUTPUT
+
+    void PID() {
+        long now = System.currentTimeMillis();
+        int timeChange = ((int)now - (int)lastTime);
+        if(timeChange >= SampleTime) {
+            double error = Setpoint - Input; //error
+            errSum += error;
+            double dInput = (Input - lastInput);
+
+            Output = kp * error + ki * errSum  - kd * dInput;
+
+            lastInput = Input;
+            lastTime = now;
+        }
+    }
+
+    void Tune(double Kp, double Ki, double Kd) {
+        double SampleTimeInSec = ((double)SampleTime/1000);
+        kp = Kp;
+        ki = Ki * SampleTimeInSec;
+        kd = Kd / SampleTimeInSec;
+    }
+
+    void SetSampleTime(int NewSampleTime) {
+        if (NewSampleTime > 0) {
+            double ratio = (double)NewSampleTime / (double)SampleTime;
+            ki *= ratio;
+            kd /= ratio;
+            SampleTime = (int)NewSampleTime;
+        }
+    }
+
+    public void turn_gyro(double angle, double power) {
+        Input = 0; // reset Gyro
+        double angle_rad = (angle*2*Math.PI)/360;
+        while(Output < Math.abs(angle_rad)) {
+            drive_left_front.setPower(Math.signum(angle)*power);
+            drive_left_back.setPower(Math.signum(angle)*power);
+            drive_right_front.setPower(-1*Math.signum(angle)*power);
+            drive_right_back.setPower(-1*Math.signum(angle)*power);
+        }
+        drive_left_front.setPower(0);
+        drive_left_back.setPower(0);
+        drive_right_front.setPower(0);
+        drive_right_back.setPower(0);
+    }
 
 
 }
