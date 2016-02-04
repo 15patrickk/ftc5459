@@ -25,10 +25,22 @@ public class Teleop5459 extends OpMode {
 
     public static final double SPALeft = 0.0;
     public static final double SPARight = 1.0;
-    public static final double SPBLeft = 0.8;
-    public static final double SPBRight = 0.3;
+    public static final double SPCLeft = 0.5;
+    public static final double SPCRight = 0.5;
+    public static final double SPBLeft = 0.9;
+    public static final double SPBRight = 0.1;
     public long counter;
-    public static final long threshhold = 90;
+    public static final long threshhold = 70;
+
+    // left inits 0.0
+    // right inits 1.0
+    // left position1 0.8
+    // left position2 0.4
+    // right position1 0.2
+    // right position2 0.6
+
+    boolean servoLeftPosition = false; // false = 0.8 /\ true = 0.4
+    boolean servoRightPosition = false; // false = 0.2 /\ true = 0.6
 
     DcMotor lift_angle_left;
     DcMotor lift_angle_right;
@@ -37,6 +49,10 @@ public class Teleop5459 extends OpMode {
 
     public static final String MLA = "LiftAngle";
     public static final String MLE = "LiftExtend";
+
+    public double factur;
+
+    boolean facButt;
 
     public Teleop5459() {
 
@@ -61,38 +77,45 @@ public class Teleop5459 extends OpMode {
         servoleft = hardwareMap.servo.get("ServoLeft");
         servoright = hardwareMap.servo.get("ServoRight");
 
-        servoleft.setPosition(SPALeft);
-        servoright.setPosition(SPARight);
+        servoleft.setPosition(0.5);
+        servoright.setPosition(0.45);
 
         counter = 0;
-
+        facButt = false;
     }
 
     @Override
     public void loop() {
-        float ThrottleLeft = gamepad1.left_stick_y;
-        float ThrottleRight = gamepad1.right_stick_y;
+        double ThrottleLeft = gamepad1.left_stick_y;
+        double ThrottleRight = gamepad1.right_stick_y;
         float Angle = gamepad2.right_stick_y; // 0.5<y<1 Power level lower "Initial burst then slow "
-        float Extend = gamepad2.left_stick_y;
-        boolean runservoleft = gamepad2.x;
-        boolean runservoright = gamepad2.b;
+        float Extend = -1 * gamepad2.left_stick_y;
+        boolean runServoLeft = gamepad2.x;
+        boolean runServoRight = gamepad2.b;
         boolean Airhorn = gamepad1.dpad_left; // need to import sound from com.android.sti.stocksoundeffects.res.raw
 
-        if(runservoleft && (servoleft.getPosition() == SPALeft) && (counter > threshhold)) {
-            servoleft.setPosition(SPBLeft);
-            counter = 0;
-        }
-        else if(runservoleft && (counter > threshhold)){
-            servoleft.setPosition(SPALeft);
-            counter = 0;
-        }
-        if(runservoright && (servoright.getPosition() == SPARight) && (counter > threshhold)) {
-            servoright.setPosition(SPBRight);
-            counter = 0;
-        }
-        else if(runservoright && (counter > threshhold)){
-            servoright.setPosition(SPARight);
-            counter = 0;
+        if(counter > threshhold) {
+            if (gamepad1.x) { // left servo
+                double setPos = !servoLeftPosition ? 0.95 : 0.5;
+                servoleft.setPosition(setPos);
+                servoLeftPosition = !servoLeftPosition;
+
+                counter = 0;
+            }
+            if (gamepad1.b) { // right servo
+                double setPos = !servoRightPosition ? 0.03 : 0.45;
+                servoright.setPosition(setPos);
+                servoRightPosition = !servoRightPosition;
+
+                counter = 0;
+            }
+
+            if (gamepad1.a) {
+                factur = !facButt ? 0.70 : 1;
+                facButt = !facButt;
+
+                counter = 0;
+            }
         }
 
         ThrottleLeft = (float)scaleInputs(ThrottleLeft);

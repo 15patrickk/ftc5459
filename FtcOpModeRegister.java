@@ -50,6 +50,7 @@ public class FtcOpModeRegister implements OpModeRegister {
      // The first parameter is the name of the op mode The second parameter is the op mode class property
     manager.register("NullOp", NullOp.class);
     manager.register ("Teleop5459", Teleop5459.class);
+    manager.register ("Teleop5459Minimal", Teleop5459Minimal.class);
     manager.register ("Autonomous5459", Autonomous5459.class);
     manager.register ("TestingTeleop", MotorServoTesting.class);
     manager.register ("Test Auto", TestAutonomous.class);

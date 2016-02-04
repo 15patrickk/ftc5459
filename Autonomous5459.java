@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Created by Robotics on 11/19/2015.
  */
 public class Autonomous5459 extends LinearOpMode {
-    public Autonomous5459(){
+    public Autonomous5459() {
 
     }
 
@@ -21,6 +21,8 @@ public class Autonomous5459 extends LinearOpMode {
     DcMotor MotorFrontLeft;
 
     DcMotor MotorBackLeft;
+
+    DcMotor MotorLift;
 
     Servo servoright;
 
@@ -33,7 +35,8 @@ public class Autonomous5459 extends LinearOpMode {
     String sl = Teleop5459.SL;
     String sr = Teleop5459.SR;
 
-    public GyroSensor gyro;
+    public ModernRoboticsI2cGyro gyro;
+
     //double gyro_rotations;
 /*
     //PID
@@ -99,24 +102,30 @@ public class Autonomous5459 extends LinearOpMode {
         MotorBackLeft = hardwareMap.dcMotor.get("Drive_Back_Left");
         //MotorBackLeft.setDirection(DcMotor.Direction.REVERSE);
 
+        MotorLift = hardwareMap.dcMotor.get("LiftAngle");
+
         MotorFrontRight = hardwareMap.dcMotor.get("Drive_Front_Right");
         MotorBackRight = hardwareMap.dcMotor.get("Drive_Back_Right");
         MotorBackRight.setDirection(DcMotor.Direction.REVERSE);
-        gyro = hardwareMap.gyroSensor.get("Gyro");
-        //gyro_rotations = 0;
-        int v_state = 0;
+        gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("Gyro");
+        double gyro_rotations = 0;
+        int w_wumbo = 0;
+        int wumbology = 0;
+        int studyOfWumbo = 200;
 
         waitOneFullHardwareCycle();
 
+
+
         waitForStart();
 
-
+/*
         while (opModeIsActive()) {
-            switch (v_state) {
+            switch (w_wumbo) {
                 case 0:
                     MotorFrontRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
-                    if(MotorFrontRight.getCurrentPosition() == 0){
-                        v_state++;
+                    if (MotorFrontRight.getCurrentPosition() == 0) {
+                        w_wumbo++;
                     }
 
                 case 1:
@@ -128,25 +137,61 @@ public class Autonomous5459 extends LinearOpMode {
                     MotorBackRight.setPower(-1.0);
                     MotorBackLeft.setPower(-1.0);
 
-                    v_state++;
+                    w_wumbo++;
                     break;
 
                 case 2:
-                    if((Math.abs(MotorFrontRight.getCurrentPosition()) > 1000)) {
-                    MotorFrontRight.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-                    MotorFrontRight.setPower(0.0);
-                    MotorFrontLeft.setPower(0.0);
-                    MotorBackRight.setPower(0.0);
-                    MotorBackLeft.setPower(0.0);
+                    if ((Math.abs(MotorFrontRight.getCurrentPosition()) > 1000)) {
+                        MotorFrontRight.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+                        MotorFrontRight.setPower(0.0);
+                        MotorFrontLeft.setPower(0.0);
+                        MotorBackRight.setPower(0.0);
+                        MotorBackLeft.setPower(0.0);
                         MotorFrontRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
 
-                    v_state++;
-                }
+                        w_wumbo++;
+                    }
 
                     break;
+                case 3:
+                    MotorFrontRight.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+
+                    MotorFrontRight.setPower(0.5);
+                    MotorFrontLeft.setPower(-0.5);
+                    MotorBackRight.setPower(0.5);
+                    MotorBackLeft.setPower(-0.5);
+
+                    w_wumbo++;
+                    break;
+
+                case 4:
+                    if ((Math.abs(MotorFrontRight.getCurrentPosition()) > 500)) {
+                        MotorFrontRight.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+                        MotorFrontRight.setPower(0.0);
+                        MotorFrontLeft.setPower(0.0);
+                        MotorBackRight.setPower(0.0);
+                        MotorBackLeft.setPower(0.0);
+                        MotorFrontRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
+
+                        w_wumbo++;
+
+                    }
+                    break;
+
+                case 5:
+                    MotorLift.setPower(0.5);
+                    if (wumbology > studyOfWumbo) {
+                        w_wumbo++;
+                    }
+                    wumbology++;
+                    break;
+
+                case 6:
+                    MotorLift.setPower(0.0);
+                    break;
+
 
             }
-
-        }
+        }*/
     }
 }
