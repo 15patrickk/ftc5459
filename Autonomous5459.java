@@ -1,10 +1,12 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 
 /**
  * Created by Robotics on 11/19/2015.
@@ -14,31 +16,50 @@ public class Autonomous5459 extends LinearOpMode {
 
     }
 
-    DcMotor MotorFrontRight;
+    DcMotor drive_left_front;
+    DcMotor drive_left_back;
+    DcMotor drive_right_front;
+    DcMotor drive_right_back;
 
-    DcMotor MotorBackRight;
+    /* SERVOS */
+    Servo ziplineLeft;
+    Servo ziplineRight;
+    Servo rodLeft;
+    Servo rodRight;
+    Servo rodCenter;
+    Servo wire;
+    Servo push;
 
-    DcMotor MotorFrontLeft;
+    /* TITLES */
+    public static final String DLF = "Drive_Front_Left";
+    public static final String DLB = "Drive_Back_Left";
+    public static final String DRF = "Drive_Front_Right";
+    public static final String DRB = "Drive_Back_Right";
+    public static final String ZL = "ZiplineLeft";
+    public static final String ZR = "ZiplineRight";
+    public static final String RL = "RodLeft";
+    public static final String RC = "RodCenter";
+    public static final String RR = "RodRight";
+    public static final String WS = "Wire";
+    public static final String PS = "Push";
 
-    DcMotor MotorBackLeft;
-
-    DcMotor MotorLift;
-
-    Servo servoright;
-
-    Servo servoleft;
-
-    String ml1 = Teleop5459.ML1;
-    String ml2 = Teleop5459.ML2;
-    String mr1 = Teleop5459.MR1;
-    String mr2 = Teleop5459.MR2;
-    String sl = Teleop5459.SL;
-    String sr = Teleop5459.SR;
+    /* ZIPLINE VALUES */
+    public static final double SPALeft = 0.0;
+    public static final double SPARight = 1.0;
+    public static final double SPCLeft = 0.5;
+    public static final double SPCRight = 0.5;
+    public static final double SPBLeft = 0.9;
+    public static final double SPBRight = 0.1;
+    public static final double RCi = 0.0;
+    public static final double RLi = 0.0;
+    public static final double RRi = 1.0;
+    public static final double PSi = 0.0;
 
     public ModernRoboticsI2cGyro gyro;
+    public ModernRoboticsI2cColorSensor color;
 
     //double gyro_rotations;
-/*
+
     //PID
     long lastTime;
     double Input, Output, Setpoint;
@@ -77,55 +98,97 @@ public class Autonomous5459 extends LinearOpMode {
         }
     }
 
-    public void turn_gyro(double angle, double power) {
-        Input = 0; // reset Gyro
+    public void turn_gyro_nPID(double angle, double midPower) {
+
+        double currentHeading = gyro.getHeading();
+        double driveGain = 3;
+
+        while (currentHeading < angle) {
+
+            double headingError = angle - currentHeading;
+            double driveSteering = headingError * driveGain;
+            double leftPower = midPower + driveSteering;
+            double rightPower = midPower - driveSteering;
+
+            drive_left_front.setPower(Math.signum(angle) * leftPower);
+            drive_left_back.setPower(Math.signum(angle) * leftPower);
+            drive_right_front.setPower(Math.signum(angle) * rightPower);
+            drive_right_back.setPower(Math.signum(angle) * rightPower);
+
+            currentHeading = gyro.getHeading();
+        }
+        drive_left_front.setPower(0);
+        drive_left_back.setPower(0);
+        drive_right_front.setPower(0);
+        drive_right_back.setPower(0);
+    } // this might not work at all.
+
+    public void turn_gyro_PID(double angle, double power) {
+        // double gyro_prior = gyro.getHeading();
         double angle_rad = (angle*2*Math.PI)/360;
         while(Output < Math.abs(angle_rad)) {
-            MotorFrontLeft.setPower(Math.signum(angle)*power);
-            MotorBackLeft.setPower(Math.signum(angle) * power);
-            MotorFrontRight.setPower(-1 * Math.signum(angle) * power);
-            MotorFrontRight.setPower(-1 * Math.signum(angle) * power);
+            drive_left_front.setPower(Math.signum(angle)*power);
+            drive_left_back.setPower(Math.signum(angle) * power);
+            drive_right_front.setPower(-1 * Math.signum(angle) * power);
+            drive_right_back.setPower(-1 * Math.signum(angle) * power);
+            // getHeading();
         }
-        MotorFrontLeft.setPower(0);
-        MotorBackLeft.setPower(0);
-        MotorFrontRight.setPower(0);
-        MotorFrontRight.setPower(0);
+        drive_left_front.setPower(0);
+        drive_left_back.setPower(0);
+        drive_right_front.setPower(0);
+        drive_right_back.setPower(0);
+    }
+
+    public void release_lift() {
+
     }
 
 
-*/
+
     @Override
     public void runOpMode() throws InterruptedException {
-        MotorFrontLeft = hardwareMap.dcMotor.get("Drive_Front_Left");
-        MotorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
+        drive_left_front = hardwareMap.dcMotor.get(DLF);
+        drive_left_front.setDirection(DcMotor.Direction.REVERSE);
 
-        MotorBackLeft = hardwareMap.dcMotor.get("Drive_Back_Left");
+        drive_left_back = hardwareMap.dcMotor.get(DLB);
         //MotorBackLeft.setDirection(DcMotor.Direction.REVERSE);
 
-        MotorLift = hardwareMap.dcMotor.get("LiftAngle");
+        //MotorLift = hardwareMap.dcMotor.get("LiftAngle");
 
-        MotorFrontRight = hardwareMap.dcMotor.get("Drive_Front_Right");
-        MotorBackRight = hardwareMap.dcMotor.get("Drive_Back_Right");
-        MotorBackRight.setDirection(DcMotor.Direction.REVERSE);
+        drive_right_front = hardwareMap.dcMotor.get(DRF);
+        drive_right_back = hardwareMap.dcMotor.get(DRB);
+        drive_right_back.setDirection(DcMotor.Direction.REVERSE);
+
+        wire = hardwareMap.servo.get(WS);
+        rodCenter = hardwareMap.servo.get(RC);
+        rodLeft = hardwareMap.servo.get(RL);
+        rodRight = hardwareMap.servo.get(RR);
+
+        push = hardwareMap.servo.get(PS);
+
         gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("Gyro");
+        color = (ModernRoboticsI2cColorSensor) hardwareMap.colorSensor.get("Color");
+
         double gyro_rotations = 0;
-        int w_wumbo = 0;
-        int wumbology = 0;
-        int studyOfWumbo = 200;
+        int v_state = 0;
+        int counter = 0;
+        int threshold = 200;
+
+        // SERVO INITIALIZATIONS: CRITICAL
 
         waitOneFullHardwareCycle();
 
-
+        gyro.calibrate();
 
         waitForStart();
 
 /*
         while (opModeIsActive()) {
-            switch (w_wumbo) {
+            switch (v_state) {
                 case 0:
                     MotorFrontRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
                     if (MotorFrontRight.getCurrentPosition() == 0) {
-                        w_wumbo++;
+                        v_state++;
                     }
 
                 case 1:
@@ -137,7 +200,7 @@ public class Autonomous5459 extends LinearOpMode {
                     MotorBackRight.setPower(-1.0);
                     MotorBackLeft.setPower(-1.0);
 
-                    w_wumbo++;
+                    v_state++;
                     break;
 
                 case 2:
@@ -149,7 +212,7 @@ public class Autonomous5459 extends LinearOpMode {
                         MotorBackLeft.setPower(0.0);
                         MotorFrontRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
 
-                        w_wumbo++;
+                        v_state++;
                     }
 
                     break;
@@ -161,7 +224,7 @@ public class Autonomous5459 extends LinearOpMode {
                     MotorBackRight.setPower(0.5);
                     MotorBackLeft.setPower(-0.5);
 
-                    w_wumbo++;
+                    v_state++;
                     break;
 
                 case 4:
@@ -173,17 +236,17 @@ public class Autonomous5459 extends LinearOpMode {
                         MotorBackLeft.setPower(0.0);
                         MotorFrontRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
 
-                        w_wumbo++;
+                        v_state++;
 
                     }
                     break;
 
                 case 5:
                     MotorLift.setPower(0.5);
-                    if (wumbology > studyOfWumbo) {
-                        w_wumbo++;
+                    if (counter > threshold) {
+                        v_state++;
                     }
-                    wumbology++;
+                    counter++;
                     break;
 
                 case 6:
