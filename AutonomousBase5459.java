@@ -18,6 +18,7 @@ public abstract class AutonomousBase5459 extends LinearOpMode {
     DcMotor drive_left_back;
     DcMotor drive_right_front;
     DcMotor drive_right_back;
+    DcMotor lift;
 
     // servos
     Servo ziplineLeft;
@@ -29,10 +30,9 @@ public abstract class AutonomousBase5459 extends LinearOpMode {
     Servo push;
 
     // titles
-    public static final String DLF = "Drive_Front_Left";
-    public static final String DLB = "Drive_Back_Left";
-    public static final String DRF = "Drive_Front_Right";
-    public static final String DRB = "Drive_Back_Right";
+    public static final String DL = "DriveLeft";
+    public static final String DR = "DriveRight";
+    public static final String L = "Lift";
     public static final String ZL = "ZiplineLeft";
     public static final String ZR = "ZiplineRight";
     public static final String RL = "RodLeft";
@@ -140,17 +140,19 @@ public abstract class AutonomousBase5459 extends LinearOpMode {
     public void release_lift() { } // implement
 
     public void initialization() throws InterruptedException {
-        drive_left_front = hardwareMap.dcMotor.get(DLF);
+        drive_left_front = hardwareMap.dcMotor.get(DL);
         drive_left_front.setDirection(DcMotor.Direction.REVERSE);
 
-        drive_left_back = hardwareMap.dcMotor.get(DLB);
+        drive_left_back = hardwareMap.dcMotor.get(DL);
         //MotorBackLeft.setDirection(DcMotor.Direction.REVERSE);
 
         //MotorLift = hardwareMap.dcMotor.get("LiftAngle");
 
-        drive_right_front = hardwareMap.dcMotor.get(DRF);
-        drive_right_back = hardwareMap.dcMotor.get(DRB);
+        drive_right_front = hardwareMap.dcMotor.get(DR);
+        drive_right_back = hardwareMap.dcMotor.get(DR);
         drive_right_back.setDirection(DcMotor.Direction.REVERSE);
+
+        lift = hardwareMap.dcMotor.get(L);
 
         wire = hardwareMap.servo.get(WS);
         rodCenter = hardwareMap.servo.get(RC);
