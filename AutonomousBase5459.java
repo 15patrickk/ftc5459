@@ -144,15 +144,15 @@ public abstract class AutonomousBase5459 extends LinearOpMode {
         drive_left_front.setDirection(DcMotor.Direction.REVERSE);
 
         drive_left_back = hardwareMap.dcMotor.get(DL);
-        //MotorBackLeft.setDirection(DcMotor.Direction.REVERSE);
-
-        //MotorLift = hardwareMap.dcMotor.get("LiftAngle");
 
         drive_right_front = hardwareMap.dcMotor.get(DR);
         drive_right_back = hardwareMap.dcMotor.get(DR);
         drive_right_back.setDirection(DcMotor.Direction.REVERSE);
 
         lift = hardwareMap.dcMotor.get(L);
+
+        ziplineLeft = hardwareMap.servo.get(ZL);
+        ziplineRight = hardwareMap.servo.get(ZR);
 
         wire = hardwareMap.servo.get(WS);
         rodCenter = hardwareMap.servo.get(RC);

@@ -4,6 +4,7 @@ public class RC_FromBase extends AutonomousBase5459 {
     public RC_FromBase() { }
 
     public void runOpMode() throws InterruptedException {
+        initialization();
         int v_state = 0;
 
         while (opModeIsActive()) {
