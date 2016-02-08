@@ -7,15 +7,13 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 
-/**
- * Created by Robotics on 11/19/2015.
- */
 public class Autonomous5459 extends LinearOpMode {
-    public Autonomous5459() {
+    public Autonomous5459() { }
 
-    }
-
+    // DC motors
     DcMotor drive_left_front;
     DcMotor drive_left_back;
     DcMotor drive_right_front;
@@ -57,6 +55,8 @@ public class Autonomous5459 extends LinearOpMode {
 
     public ModernRoboticsI2cGyro gyro;
     public ModernRoboticsI2cColorSensor color;
+    public ModernRoboticsAnalogOpticalDistanceSensor opticalLeft;
+    public ModernRoboticsAnalogOpticalDistanceSensor opticalRight;
 
     //double gyro_rotations;
 
@@ -69,13 +69,13 @@ public class Autonomous5459 extends LinearOpMode {
 
     void PID() {
         long now = System.currentTimeMillis();
-        int timeChange = ((int)now - (int)lastTime);
-        if(timeChange >= SampleTime) {
+        int timeChange = ((int) now - (int) lastTime);
+        if (timeChange >= SampleTime) {
             double error = Setpoint - Input; //error
             errSum += error;
             double dInput = (Input - lastInput);
 
-            Output = kp * error + ki * errSum  - kd * dInput;
+            Output = kp * error + ki * errSum - kd * dInput;
 
             lastInput = Input;
             lastTime = now;
@@ -83,7 +83,7 @@ public class Autonomous5459 extends LinearOpMode {
     }
 
     void Tune(double Kp, double Ki, double Kd) {
-        double SampleTimeInSec = ((double)SampleTime/1000);
+        double SampleTimeInSec = ((double) SampleTime / 1000);
         kp = Kp;
         ki = Ki * SampleTimeInSec;
         kd = Kd / SampleTimeInSec;
@@ -91,10 +91,10 @@ public class Autonomous5459 extends LinearOpMode {
 
     void SetSampleTime(int NewSampleTime) {
         if (NewSampleTime > 0) {
-            double ratio = (double)NewSampleTime / (double)SampleTime;
+            double ratio = (double) NewSampleTime / (double) SampleTime;
             ki *= ratio;
             kd /= ratio;
-            SampleTime = (int)NewSampleTime;
+            SampleTime = (int) NewSampleTime;
         }
     }
 
@@ -125,9 +125,9 @@ public class Autonomous5459 extends LinearOpMode {
 
     public void turn_gyro_PID(double angle, double power) {
         // double gyro_prior = gyro.getHeading();
-        double angle_rad = (angle*2*Math.PI)/360;
-        while(Output < Math.abs(angle_rad)) {
-            drive_left_front.setPower(Math.signum(angle)*power);
+        double angle_rad = (angle * 2 * Math.PI) / 360;
+        while (Output < Math.abs(angle_rad)) {
+            drive_left_front.setPower(Math.signum(angle) * power);
             drive_left_back.setPower(Math.signum(angle) * power);
             drive_right_front.setPower(-1 * Math.signum(angle) * power);
             drive_right_back.setPower(-1 * Math.signum(angle) * power);
@@ -142,7 +142,6 @@ public class Autonomous5459 extends LinearOpMode {
     public void release_lift() {
 
     }
-
 
 
     @Override
@@ -168,6 +167,8 @@ public class Autonomous5459 extends LinearOpMode {
 
         gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("Gyro");
         color = (ModernRoboticsI2cColorSensor) hardwareMap.colorSensor.get("Color");
+        opticalLeft = (ModernRoboticsAnalogOpticalDistanceSensor) hardwareMap.opticalDistanceSensor.get("OpticalLeft");
+        opticalRight = (ModernRoboticsAnalogOpticalDistanceSensor) hardwareMap.opticalDistanceSensor.get("OpticalRight");
 
         double gyro_rotations = 0;
         int v_state = 0;
@@ -176,85 +177,38 @@ public class Autonomous5459 extends LinearOpMode {
 
         // SERVO INITIALIZATIONS: CRITICAL
 
+        ziplineLeft.setPosition(0.5);
+        ziplineRight.setPosition(0.5);
+        rodLeft.setPosition(0.5);
+        rodRight.setPosition(0.5);
+        rodCenter.setPosition(0.5);
+        wire.setPosition(1.0);
+        push.setPosition(1.0);
+
+
         waitOneFullHardwareCycle();
 
         gyro.calibrate();
 
+        while (gyro.isCalibrating()) {
+            Thread.sleep(50);
+        }
+
         waitForStart();
 
-/*
+
         while (opModeIsActive()) {
             switch (v_state) {
+
                 case 0:
-                    MotorFrontRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
-                    if (MotorFrontRight.getCurrentPosition() == 0) {
-                        v_state++;
-                    }
-
+                    wire.setPosition(0.5);
+                    v_state++;
+                    break;
+                
                 case 1:
-
-                    MotorFrontRight.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-
-                    MotorFrontRight.setPower(-1.0);
-                    MotorFrontLeft.setPower(-1.0);
-                    MotorBackRight.setPower(-1.0);
-                    MotorBackLeft.setPower(-1.0);
-
-                    v_state++;
-                    break;
-
-                case 2:
-                    if ((Math.abs(MotorFrontRight.getCurrentPosition()) > 1000)) {
-                        MotorFrontRight.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-                        MotorFrontRight.setPower(0.0);
-                        MotorFrontLeft.setPower(0.0);
-                        MotorBackRight.setPower(0.0);
-                        MotorBackLeft.setPower(0.0);
-                        MotorFrontRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
-
-                        v_state++;
-                    }
-
-                    break;
-                case 3:
-                    MotorFrontRight.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-
-                    MotorFrontRight.setPower(0.5);
-                    MotorFrontLeft.setPower(-0.5);
-                    MotorBackRight.setPower(0.5);
-                    MotorBackLeft.setPower(-0.5);
-
-                    v_state++;
-                    break;
-
-                case 4:
-                    if ((Math.abs(MotorFrontRight.getCurrentPosition()) > 500)) {
-                        MotorFrontRight.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-                        MotorFrontRight.setPower(0.0);
-                        MotorFrontLeft.setPower(0.0);
-                        MotorBackRight.setPower(0.0);
-                        MotorBackLeft.setPower(0.0);
-                        MotorFrontRight.setChannelMode(DcMotorController.RunMode.RESET_ENCODERS);
-
-                        v_state++;
-
-                    }
-                    break;
-
-                case 5:
-                    MotorLift.setPower(0.5);
-                    if (counter > threshold) {
-                        v_state++;
-                    }
-                    counter++;
-                    break;
-
-                case 6:
-                    MotorLift.setPower(0.0);
-                    break;
 
 
             }
-        }*/
+        }
     }
 }
