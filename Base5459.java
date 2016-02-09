@@ -151,9 +151,16 @@ public abstract class Base5459 extends OpMode {
 
     public void release_lift() { } // [[TODO: implement]]
 
-    // [[TODO: changed this to an override of the `init()` method; test]]
     @Override
-    public void init() throws InterruptedException {
+    public void init() {
+        try { initialization(); }
+        catch (Exception ex) {
+            telemetry.addData("Initialization failed!", "Exception: " + ex.getMessage());
+        }
+
+    }
+
+    public void initialization() throws InterruptedException {
         drive_left_front = hardwareMap.dcMotor.get(DL);
         drive_left_front.setDirection(DcMotor.Direction.REVERSE);
 
@@ -194,15 +201,11 @@ public abstract class Base5459 extends OpMode {
         wire.setPosition(1.0);
         push.setPosition(1.0);
 
-
-        waitOneFullHardwareCycle();
-
         gyro.calibrate();
 
         while (gyro.isCalibrating()) {
             Thread.sleep(50);
         }
 
-        waitForStart(); // should this be moved? 
     }
 }
