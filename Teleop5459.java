@@ -45,9 +45,9 @@ public class Teleop5459 extends OpMode {
     public static final double SPCRight = 0.5;
     public static final double SPBLeft = 0.9;
     public static final double SPBRight = 0.1;
-    public static final double RCi = 0.0;
-    public static final double RLi = 0.0;
-    public static final double RRi = 1.0;
+    public static final double RCi = 0.5;
+    public static final double RLi = 0.5;
+    public static final double RRi = 0.5;
     public static final double PSi = 0.0;       // THESE NEED TESTING
     public static final double WSi = 0.0;
 
@@ -132,8 +132,11 @@ public class Teleop5459 extends OpMode {
                 double posL = rodLeft.getPosition();
                 double posR = rodRight.getPosition();
 
-                rodLeft.setPosition(posL + .05);
-                rodRight.setPosition(posR - .05);
+                if((posR - 0.05) > 0.0 && (posL + 0.05) < 1.0) {
+
+                    rodLeft.setPosition(posL + .05);
+                    rodRight.setPosition(posR - .05);
+                }
 
                 counter = 0;
             }
@@ -142,8 +145,11 @@ public class Teleop5459 extends OpMode {
                 double posL = rodLeft.getPosition();
                 double posR = rodRight.getPosition();
 
-                rodLeft.setPosition(posL - .05);
-                rodRight.setPosition(posR + .05);
+                if((posR + 0.05) < 1.0 && (posL - 0.05) > 0.0) {
+
+                    rodLeft.setPosition(posL - .05);
+                    rodRight.setPosition(posR + .05);
+                }
 
                 counter = 0;
             }
