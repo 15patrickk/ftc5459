@@ -133,7 +133,7 @@ public class Teleop5459 extends OpMode {
                 double posR = rodRight.getPosition();
 
                 rodLeft.setPosition(posL + .05);
-                rodRight.setPosition(posR + .05);
+                rodRight.setPosition(posR - .05);
 
                 counter = 0;
             }
@@ -143,7 +143,7 @@ public class Teleop5459 extends OpMode {
                 double posR = rodRight.getPosition();
 
                 rodLeft.setPosition(posL - .05);
-                rodRight.setPosition(posR - .05);
+                rodRight.setPosition(posR + .05);
 
                 counter = 0;
             }
