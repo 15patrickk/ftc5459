@@ -1,144 +1,35 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range; //didnt need to do this, only used y input on controllers
-
-/**
- * Created by Robotics on 10/26/2015.
- */
-public class Teleop5459 extends OpMode {
-
-    /* MOTORS */
-    DcMotor drive_left_front;
-    DcMotor drive_left_back;
-    DcMotor drive_right_front;
-    DcMotor drive_right_back;
-    DcMotor lift;
-
-    /* SERVOS */
-    Servo ziplineLeft;
-    Servo ziplineRight;
-    Servo rodLeft;
-    Servo rodRight;
-    Servo rodCenter;
-    Servo push;
-    Servo wire;
-
-    /* TITLES */
-    public static final String DL = "DriveLeft";
-    public static final String DR = "DriveRight";
-    public static final String L = "Lift";
-    public static final String ZL = "ZiplineLeft";
-    public static final String ZR = "ZiplineRight";
-    public static final String RL = "RodLeft";
-    public static final String RC = "RodCenter";
-    public static final String RR = "RodRight";
-    public static final String WS = "Wire";
-    public static final String PS = "Push";
-
-    /* ZIPLINE VALUES */
-    public static final double SPALeft = 0.0;
-    public static final double SPARight = 1.0;
-    public static final double SPCLeft = 0.5;
-    public static final double SPCRight = 0.5;
-    public static final double SPBLeft = 0.9;
-    public static final double SPBRight = 0.1;
-    public static final double RCi = 0.5;
-    public static final double RLi = 0.5;
-    public static final double RRi = 0.5;
-    public static final double PSi = 0.0;       // THESE NEED TESTING
-    public static final double WSi = 0.0;
-
-    public long counter;
-    public static final long threshhold = 70;
-
-    // left inits 0.0
-    // right inits 1.0
-    // left position1 0.8
-    // left position2 0.4
-    // right position1 0.2
-    // right position2 0.6
-
+public class Teleop5459 extends Base5459 {
     boolean ziplineLeftPosition = false; // false = 0.8 /\ true = 0.4
     boolean ziplineRightPosition = false; // false = 0.2 /\ true = 0.6
 
-    public double factur;
-    boolean facButt;
-
-    public Teleop5459() {
-
-    }
-
-
-    @Override
-    public void init() {
-
-        /* DRIVE MOTORS */
-        drive_left_front = hardwareMap.dcMotor.get(DL);
-        drive_left_front.setDirection(DcMotor.Direction.REVERSE);
-        drive_left_back = hardwareMap.dcMotor.get(DL);
-        //drive_left_back.setDirection(DcMotor.Direction.REVERSE);
-        drive_right_front = hardwareMap.dcMotor.get(DR);
-        //drive_right_front.setDirection(DcMotor.Direction.REVERSE);//comment out
-        drive_right_back = hardwareMap.dcMotor.get(DR);
-        drive_right_back.setDirection(DcMotor.Direction.REVERSE);
-
-        lift = hardwareMap.dcMotor.get(L);
-
-        //lift_angle_right = hardwareMap.dcMotor.get(MLA);
-        //lift_extend_right = hardwareMap.dcMotor.get(MLE);
-        //lift_extend_right.setDirection(DcMotor.Direction.REVERSE);
-
-        /* SERVOS */
-        ziplineLeft = hardwareMap.servo.get(ZL);
-        ziplineRight = hardwareMap.servo.get(ZR);
-
-        rodLeft = hardwareMap.servo.get(RL);
-        rodCenter = hardwareMap.servo.get(RC);
-        rodRight = hardwareMap.servo.get(RR);
-
-        wire = hardwareMap.servo.get(WS);
-        push = hardwareMap.servo.get(PS);
-
-        ziplineLeft.setPosition(0.5);
-        ziplineRight.setPosition(0.45);
-
-        rodCenter.setPosition(RCi);
-        rodLeft.setPosition(RLi);
-        rodRight.setPosition(RRi);
-
-        counter = 0;
-        facButt = false;
-    }
+    public Teleop5459() { }
 
     @Override
     public void loop() {
-
-        /* DRIVE MOTORS */
+        // continuous controls
         double ThrottleLeft = gamepad1.left_stick_y;
         double ThrottleRight = gamepad1.right_stick_y;
-        float Angle = gamepad2.right_stick_y; // 0.5<y<1 Power level lower "Initial burst then slow "
+        float Angle = gamepad2.right_stick_y; // 0.5<y<1 Power level lower "Initial burst then slow"
         float Extend = -1 * gamepad2.left_stick_y;
         boolean runZiplineLeft = gamepad2.x;
         boolean runZiplineRight = gamepad2.b;
-        boolean Airhorn = gamepad1.dpad_left; // need to import sound from com.android.sti.stocksoundeffects.res.raw
 
-        /* DISCRETE BUTTONS */
-        if(counter > threshhold) {
-
+        // discrete controls
+        if(counter > threshhold) { // debounces buttons
+            // [[TODO: properly document what these buttons do]]
+            // [[TODO: cleaner method of debouncing]]
             if (gamepad2.dpad_up) {
                 double posL = rodLeft.getPosition();
                 double posR = rodRight.getPosition();
 
                 if((posR - 0.05) > 0.0 && (posL + 0.05) < 1.0) {
-
                     rodLeft.setPosition(posL + .05);
                     rodRight.setPosition(posR - .05);
                 }
 
-                counter = 0;
+                counter = 0; 
             }
 
             if (gamepad2.dpad_down) {
@@ -146,7 +37,6 @@ public class Teleop5459 extends OpMode {
                 double posR = rodRight.getPosition();
 
                 if((posR + 0.05) < 1.0 && (posL - 0.05) > 0.0) {
-
                     rodLeft.setPosition(posL - .05);
                     rodRight.setPosition(posR + .05);
                 }
@@ -200,16 +90,10 @@ public class Teleop5459 extends OpMode {
 
                 counter = 0;
             }
-
-            if (gamepad1.a) {
-                factur = !facButt ? 0.70 : 1;
-                facButt = !facButt;
-
-                counter = 0;
-            }
         }
 
-        /* MOTOR POWER SCALING */
+        // scale motor inputs
+        // [[TODO: WTF are we doing casting double to float when original variable is a double?!]]
         ThrottleLeft = (float)scaleInputs(ThrottleLeft);
         ThrottleRight = (float)scaleInputs(ThrottleRight);
         //AngleLeft = (float)scaleInputs(AngleLeft);
@@ -217,13 +101,13 @@ public class Teleop5459 extends OpMode {
         //ExtendLeft = (float)scaleInputs(ExtendLeft);
         Extend = (float)scaleInputs(Extend);
 
-        /* DRIVE MOTOR POWER */
+        // set the drive motor power
         drive_left_front.setPower(ThrottleLeft);
         drive_left_back.setPower(ThrottleLeft);
         drive_right_front.setPower(ThrottleRight);
         drive_right_back.setPower(ThrottleRight);
 
-        counter ++;
+        counter++;
     }
 
 
@@ -254,6 +138,5 @@ public class Teleop5459 extends OpMode {
 
         // return scaled value.
         return dScale;
-
     }
 }
