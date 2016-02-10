@@ -68,14 +68,22 @@ public abstract class Base5459 extends OpMode {
     public ModernRoboticsAnalogOpticalDistanceSensor opticalLeft;
     public ModernRoboticsAnalogOpticalDistanceSensor opticalRight;
 
-    // ======= METHODS =======
+    // ======= CONSTANTS =======
+    final int threshold = 200;
 
-    // PID globals
+    // ======= STATE VARS =======
+    int counter = 0;
+    int v_state = 0;
+    double gyro_rotations = 0;
+
+    // ======= PID VARS =======
     long lastTime;
     double Input, Output, Setpoint;
     double errSum, lastInput;
     double kp, ki, kd;
     int SampleTime = 1000;
+
+    // ======= METHODS =======
 
     void PID() {
         long now = System.currentTimeMillis();
@@ -176,21 +184,16 @@ public abstract class Base5459 extends OpMode {
         ziplineRight = hardwareMap.servo.get(ZR);
 
         wire = hardwareMap.servo.get(WS);
+        push = hardwareMap.servo.get(PS);
+
         rodCenter = hardwareMap.servo.get(RC);
         rodLeft = hardwareMap.servo.get(RL);
         rodRight = hardwareMap.servo.get(RR);
-
-        push = hardwareMap.servo.get(PS);
 
         gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("Gyro");
         color = (ModernRoboticsI2cColorSensor) hardwareMap.colorSensor.get("Color");
         opticalLeft = (ModernRoboticsAnalogOpticalDistanceSensor) hardwareMap.opticalDistanceSensor.get("OpticalLeft");
         opticalRight = (ModernRoboticsAnalogOpticalDistanceSensor) hardwareMap.opticalDistanceSensor.get("OpticalRight");
-
-        double gyro_rotations = 0;
-        int v_state = 0;
-        int counter = 0;
-        int threshold = 200;
 
         // SERVO INITIALIZATIONS
         ziplineLeft.setPosition(0.5);
