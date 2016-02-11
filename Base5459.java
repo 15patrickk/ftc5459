@@ -37,6 +37,7 @@ public abstract class Base5459 extends OpMode {
     Servo rodCenter;
     Servo wire;
     Servo push;
+    Servo cb;
 
     // titles
     public static final String DL = "DriveLeft";
@@ -49,18 +50,17 @@ public abstract class Base5459 extends OpMode {
     public static final String RR = "RodRight";
     public static final String WS = "Wire";
     public static final String PS = "Push";
+    public static final String CB = "Climber Button";
 
-    // zipline values [[TODO: refactor this]]
-    public static final double SPALeft = 0.0;
-    public static final double SPARight = 1.0;
-    public static final double SPCLeft = 0.5;
-    public static final double SPCRight = 0.5;
-    public static final double SPBLeft = 0.9;
-    public static final double SPBRight = 0.1;
-    public static final double RCi = 0.0;
-    public static final double RLi = 0.0;
-    public static final double RRi = 1.0;
-    public static final double PSi = 0.0;
+    // servo inits
+    public static final double RCi = 0.5;
+    public static final double RLi = 0.5;
+    public static final double RRi = 0.5;
+    public static final double PSi = 0.5;       // THESE NEED TESTING
+    public static final double WSi = 0.0;
+    public static final double CBi = 0.5;
+    public static final double ZLi = 0.0;
+    public static final double ZRi = 1.0;
 
     // sensors
     public ModernRoboticsI2cGyro gyro;

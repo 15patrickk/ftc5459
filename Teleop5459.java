@@ -25,6 +25,7 @@ public class Teleop5459 extends OpMode {
     Servo rodCenter;
     Servo push;
     Servo wire;
+    Servo cb;
 
     /* TITLES */
     public static final String DL = "DriveLeft";
@@ -37,19 +38,17 @@ public class Teleop5459 extends OpMode {
     public static final String RR = "RodRight";
     public static final String WS = "Wire";
     public static final String PS = "Push";
+    public static final String CB = "Climber Button";
 
-    /* ZIPLINE VALUES */
-    public static final double SPALeft = 0.0;
-    public static final double SPARight = 1.0;
-    public static final double SPCLeft = 0.5;
-    public static final double SPCRight = 0.5;
-    public static final double SPBLeft = 0.9;
-    public static final double SPBRight = 0.1;
+    /* SERVO INIT VALUES */
     public static final double RCi = 0.5;
     public static final double RLi = 0.5;
     public static final double RRi = 0.5;
-    public static final double PSi = 0.0;       // THESE NEED TESTING
+    public static final double PSi = 0.5;       // THESE NEED TESTING
     public static final double WSi = 0.0;
+    public static final double CBi = 0.5;
+    public static final double ZLi = 0.0;
+    public static final double ZRi = 1.0;
 
     public long counter;
     public static final long threshhold = 70;
@@ -63,8 +62,9 @@ public class Teleop5459 extends OpMode {
 
     boolean ziplineLeftPosition = false; // false = 0.8 /\ true = 0.4
     boolean ziplineRightPosition = false; // false = 0.2 /\ true = 0.6
+    boolean pushPosition = false;
 
-    public double factur;
+    public double factur = 0.5;
     boolean facButt;
 
     public Teleop5459() {
@@ -75,15 +75,17 @@ public class Teleop5459 extends OpMode {
     @Override
     public void init() {
 
+        // HARDWARE MAPPING
+
         /* DRIVE MOTORS */
         drive_left_front = hardwareMap.dcMotor.get(DL);
         drive_left_front.setDirection(DcMotor.Direction.REVERSE);
         drive_left_back = hardwareMap.dcMotor.get(DL);
-        //drive_left_back.setDirection(DcMotor.Direction.REVERSE);
+        drive_left_back.setDirection(DcMotor.Direction.REVERSE);
         drive_right_front = hardwareMap.dcMotor.get(DR);
         //drive_right_front.setDirection(DcMotor.Direction.REVERSE);//comment out
         drive_right_back = hardwareMap.dcMotor.get(DR);
-        drive_right_back.setDirection(DcMotor.Direction.REVERSE);
+      //  drive_right_back.setDirection(DcMotor.Direction.REVERSE);
 
         lift = hardwareMap.dcMotor.get(L);
 
@@ -101,13 +103,17 @@ public class Teleop5459 extends OpMode {
 
         wire = hardwareMap.servo.get(WS);
         push = hardwareMap.servo.get(PS);
+        cb = hardwareMap.servo.get(CB);
 
-        ziplineLeft.setPosition(0.5);
-        ziplineRight.setPosition(0.45);
+        ziplineLeft.setPosition(ZLi);
+        ziplineRight.setPosition(ZRi); // FIX!!!
 
         rodCenter.setPosition(RCi);
         rodLeft.setPosition(RLi);
         rodRight.setPosition(RRi);
+
+        push.setPosition(PSi);
+        wire.setPosition(WSi);
 
         counter = 0;
         facButt = false;
@@ -119,6 +125,7 @@ public class Teleop5459 extends OpMode {
         /* DRIVE MOTORS */
         double ThrottleLeft = gamepad1.left_stick_y;
         double ThrottleRight = gamepad1.right_stick_y;
+        double ThrottleRod = gamepad2.right_stick_y;
         float Angle = gamepad2.right_stick_y; // 0.5<y<1 Power level lower "Initial burst then slow "
         float Extend = -1 * gamepad2.left_stick_y;
         boolean runZiplineLeft = gamepad2.x;
@@ -155,23 +162,39 @@ public class Teleop5459 extends OpMode {
             }
 
             if (gamepad2.dpad_left) {
-                double posC = rodCenter.getPosition();
+                /*double posC = rodCenter.getPosition();
 
-                rodCenter.setPosition(posC + .05);
+                if((posC + .05) < 1.0) {
+                    rodCenter.setPosition(posC + .05);
+                }*/
+
+                rodCenter.setPosition(1.0);
 
                 counter = 0;
-            }
+            } else { rodCenter.setPosition(0.5); }
 
             if (gamepad2.dpad_right) {
-                double posC = rodCenter.getPosition();
+                /*double posC = rodCenter.getPosition();
 
-                rodCenter.setPosition(posC - .05);
+                if((posC - .05) > 0.0) {
+                    rodCenter.setPosition(posC - .05);
+                }*/
+
+                rodCenter.setPosition(0.0);
 
                 counter = 0;
-            }
+            } else { rodCenter.setPosition(0.5); }
 
-            if (gamepad2.x || gamepad2.b) {
+            /*if (gamepad2.x || gamepad2.b) {
                 rodCenter.setPosition(RCi);
+
+                counter = 0;
+            }*/
+
+            if (gamepad1.a) {
+                double setPos = !pushPosition ? PSi : 0.2;
+                push.setPosition(setPos);
+                pushPosition = !pushPosition;
 
                 counter = 0;
             }
@@ -186,7 +209,7 @@ public class Teleop5459 extends OpMode {
             */
 
             if (gamepad1.x) { // left servo
-                double setPos = !ziplineLeftPosition ? 0.95 : 0.5;
+                double setPos = !ziplineLeftPosition ? ZLi : 0.55;
                 ziplineLeft.setPosition(setPos);
                 ziplineLeftPosition = !ziplineLeftPosition;
 
@@ -194,15 +217,15 @@ public class Teleop5459 extends OpMode {
             }
 
             if (gamepad1.b) { // right servo
-                double setPos = !ziplineRightPosition ? 0.03 : 0.45;
+                double setPos = !ziplineRightPosition ? ZRi : 0.45;
                 ziplineRight.setPosition(setPos);
                 ziplineRightPosition = !ziplineRightPosition;
 
                 counter = 0;
             }
 
-            if (gamepad1.a) {
-                factur = !facButt ? 0.70 : 1;
+            if (gamepad1.y) {
+                //factur = !facButt ? 0.70 : 1;
                 facButt = !facButt;
 
                 counter = 0;
@@ -212,16 +235,18 @@ public class Teleop5459 extends OpMode {
         /* MOTOR POWER SCALING */
         ThrottleLeft = (float)scaleInputs(ThrottleLeft);
         ThrottleRight = (float)scaleInputs(ThrottleRight);
-        //AngleLeft = (float)scaleInputs(AngleLeft);
-        Angle = (float)scaleInputs(Angle);
-        //ExtendLeft = (float)scaleInputs(ExtendLeft);
-        Extend = (float)scaleInputs(Extend);
+        ThrottleRod = (float)scaleInputs(ThrottleRod);
 
         /* DRIVE MOTOR POWER */
         drive_left_front.setPower(ThrottleLeft);
         drive_left_back.setPower(ThrottleLeft);
         drive_right_front.setPower(ThrottleRight);
         drive_right_back.setPower(ThrottleRight);
+        if(facButt) {
+            double ThrottleRodNew = ThrottleRod / factur;
+            lift.setPower(ThrottleRodNew);
+        }
+        else {lift.setPower(ThrottleRod);}
 
         counter ++;
     }
@@ -253,6 +278,11 @@ public class Teleop5459 extends OpMode {
         }
 
         // return scaled value.
+
+        if(facButt) {
+            dScale *= factur;
+        }
+
         return dScale;
 
     }
