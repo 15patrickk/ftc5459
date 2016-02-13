@@ -69,7 +69,7 @@ public abstract class Base5459 extends OpMode {
     public ModernRoboticsAnalogOpticalDistanceSensor opticalRight;
 
     // ======= CONSTANTS =======
-    final int threshold = 200;
+    final int debounceThreshold = 75;
 
     // ======= STATE VARS =======
     int counter = 0;
