@@ -21,9 +21,8 @@ public class Teleop5459 extends Base5459 {
 
         // discrete controls
         if(counter > threshhold) { // debounces buttons
-            // [[TODO: properly document what these buttons do]]
             // [[TODO: cleaner method of debouncing]]
-            if (gamepad2.dpad_up) {
+            if (gamepad2.dpad_up) { // takes L/R rods up
                 double posL = rodLeft.getPosition();
                 double posR = rodRight.getPosition();
 
@@ -34,7 +33,7 @@ public class Teleop5459 extends Base5459 {
                 counter = 0;
             }
 
-            if (gamepad2.dpad_down) {
+            if (gamepad2.dpad_down) { // takes L/R rods down
                 double posL = rodLeft.getPosition();
                 double posR = rodRight.getPosition();
 
@@ -45,7 +44,7 @@ public class Teleop5459 extends Base5459 {
                 }
             }
 
-            if (gamepad2.dpad_left) {
+            if (gamepad2.dpad_left) { // takes C rod left
                 double posC = rodCenter.getPosition();
 
                 if((posC - 0.05) > 0.0) {
@@ -55,7 +54,7 @@ public class Teleop5459 extends Base5459 {
                 }
             }
 
-            if (gamepad2.dpad_right) {
+            if (gamepad2.dpad_right) { // takes C rod right
                 double posC = rodCenter.getPosition();
                 if((posC + 0.05) < 1.0) {
 
@@ -64,7 +63,7 @@ public class Teleop5459 extends Base5459 {
                 }
             }
 
-            if (gamepad1.a) {
+            if (gamepad1.a) { // toggle block pusher up/down
                 double setPos = !pushPosition ? PSi : 0.2;
                 push.setPosition(setPos);
                 pushPosition = !pushPosition;
@@ -72,7 +71,7 @@ public class Teleop5459 extends Base5459 {
                 counter = 0;
             }
 
-            if (gamepad1.x) { // left servo
+            if (gamepad1.x) { // toggle L zipline
                 double setPos = !ziplineLeftPosition ? ZLi : 0.55;
                 ziplineLeft.setPosition(setPos);
                 ziplineLeftPosition = !ziplineLeftPosition;
@@ -80,7 +79,7 @@ public class Teleop5459 extends Base5459 {
                 counter = 0;
             }
 
-            if (gamepad1.b) { // right servo
+            if (gamepad1.b) { // toggle R zipline
                 double setPos = !ziplineRightPosition ? ZRi : 0.45;
                 ziplineRight.setPosition(setPos);
                 ziplineRightPosition = !ziplineRightPosition;
@@ -88,7 +87,7 @@ public class Teleop5459 extends Base5459 {
                 counter = 0;
             }
 
-            if (gamepad1.y) { // scaling
+            if (gamepad1.y) { // scale drive motors
                 scaling = !scaling;
                 scaleFactor = scaling ? 0.50 : 1;
 
