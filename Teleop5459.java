@@ -42,8 +42,8 @@ public class Teleop5459 extends OpMode {
 
     /* SERVO INIT VALUES */
     public static final double RCi = 0.5;
-    public static final double RLi = 0.5;
-    public static final double RRi = 0.5;
+    public static final double RLi = 1.0;
+    public static final double RRi = 0.0;
     public static final double PSi = 0.5;       // THESE NEED TESTING
     public static final double WSi = 0.0;
     public static final double CBi = 0.5;
@@ -52,13 +52,6 @@ public class Teleop5459 extends OpMode {
 
     public long counter;
     public static final long threshhold = 70;
-
-    // left inits 0.0
-    // right inits 1.0
-    // left position1 0.8
-    // left position2 0.4
-    // right position1 0.2
-    // right position2 0.6
 
     boolean ziplineLeftPosition = false; // false = 0.8 /\ true = 0.4
     boolean ziplineRightPosition = false; // false = 0.2 /\ true = 0.6
@@ -143,9 +136,8 @@ public class Teleop5459 extends OpMode {
 
                     rodLeft.setPosition(posL + .05);
                     rodRight.setPosition(posR - .05);
+                    counter = 0;
                 }
-
-                counter = 0;
             }
 
             if (gamepad2.dpad_down) {
@@ -156,34 +148,28 @@ public class Teleop5459 extends OpMode {
 
                     rodLeft.setPosition(posL - .05);
                     rodRight.setPosition(posR + .05);
+                    counter = 0;
                 }
-
-                counter = 0;
             }
 
             if (gamepad2.dpad_left) {
-                /*double posC = rodCenter.getPosition();
+                double posC = rodCenter.getPosition();
 
-                if((posC + .05) < 1.0) {
-                    rodCenter.setPosition(posC + .05);
-                }*/
+                if((posC - 0.05) > 0.0) {
 
-                rodCenter.setPosition(1.0);
-
-                counter = 0;
-            } else { rodCenter.setPosition(0.5); }
+                    rodCenter.setPosition(posC - 0.05);
+                    counter = 0;
+                }
+            }
 
             if (gamepad2.dpad_right) {
-                /*double posC = rodCenter.getPosition();
+                double posC = rodCenter.getPosition();
+                if((posC + 0.05) < 1.0) {
 
-                if((posC - .05) > 0.0) {
-                    rodCenter.setPosition(posC - .05);
-                }*/
-
-                rodCenter.setPosition(0.0);
-
-                counter = 0;
-            } else { rodCenter.setPosition(0.5); }
+                    rodCenter.setPosition(posC + 0.05);
+                    counter = 0;
+                }
+            }
 
             /*if (gamepad2.x || gamepad2.b) {
                 rodCenter.setPosition(RCi);
