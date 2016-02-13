@@ -20,7 +20,7 @@ public class Teleop5459 extends Base5459 {
         boolean runZiplineRight = gamepad2.b;
 
         // discrete controls
-        if(counter > threshhold) { // debounces buttons
+        if(counter > threshold) { // debounces buttons
             // [[TODO: cleaner method of debouncing]]
             if (gamepad2.dpad_up) { // takes L/R rods up
                 double posL = rodLeft.getPosition();
