@@ -3,6 +3,10 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 public class Teleop5459 extends Base5459 {
     boolean ziplineLeftPosition = false; // false = 0.8 /\ true = 0.4
     boolean ziplineRightPosition = false; // false = 0.2 /\ true = 0.6
+    boolean pushPosition = false;
+    boolean scaling = false;
+
+    double scaleFactor = 0.5;
 
     public Teleop5459() { }
 
@@ -11,8 +15,7 @@ public class Teleop5459 extends Base5459 {
         // continuous controls
         double ThrottleLeft = gamepad1.left_stick_y;
         double ThrottleRight = gamepad1.right_stick_y;
-        float Angle = gamepad2.right_stick_y; // 0.5<y<1 Power level lower "Initial burst then slow"
-        float Extend = -1 * gamepad2.left_stick_y;
+        double ThrottleRod = gamepad2.right_stick_y;
         boolean runZiplineLeft = gamepad2.x;
         boolean runZiplineRight = gamepad2.b;
 
@@ -28,8 +31,7 @@ public class Teleop5459 extends Base5459 {
                     rodLeft.setPosition(posL + .05);
                     rodRight.setPosition(posR - .05);
                 }
-
-                counter = 0; 
+                counter = 0;
             }
 
             if (gamepad2.dpad_down) {
@@ -39,44 +41,39 @@ public class Teleop5459 extends Base5459 {
                 if((posR + 0.05) < 1.0 && (posL - 0.05) > 0.0) {
                     rodLeft.setPosition(posL - .05);
                     rodRight.setPosition(posR + .05);
+                    counter = 0;
                 }
-
-                counter = 0;
             }
 
             if (gamepad2.dpad_left) {
                 double posC = rodCenter.getPosition();
 
-                rodCenter.setPosition(posC + .05);
+                if((posC - 0.05) > 0.0) {
 
-                counter = 0;
+                    rodCenter.setPosition(posC - 0.05);
+                    counter = 0;
+                }
             }
 
             if (gamepad2.dpad_right) {
                 double posC = rodCenter.getPosition();
+                if((posC + 0.05) < 1.0) {
 
-                rodCenter.setPosition(posC - .05);
+                    rodCenter.setPosition(posC + 0.05);
+                    counter = 0;
+                }
+            }
+
+            if (gamepad1.a) {
+                double setPos = !pushPosition ? PSi : 0.2;
+                push.setPosition(setPos);
+                pushPosition = !pushPosition;
 
                 counter = 0;
             }
-
-            if (gamepad2.x || gamepad2.b) {
-                rodCenter.setPosition(RCi);
-
-                counter = 0;
-            }
-
-            /*
-            if (gamepad2.y || gamepad2.a) {
-                rodLeft.setPosition(RLi);
-                rodRight.setPosition(RRi);
-
-                counter = 0;
-            }
-            */
 
             if (gamepad1.x) { // left servo
-                double setPos = !ziplineLeftPosition ? 0.95 : 0.5;
+                double setPos = !ziplineLeftPosition ? ZLi : 0.55;
                 ziplineLeft.setPosition(setPos);
                 ziplineLeftPosition = !ziplineLeftPosition;
 
@@ -84,28 +81,38 @@ public class Teleop5459 extends Base5459 {
             }
 
             if (gamepad1.b) { // right servo
-                double setPos = !ziplineRightPosition ? 0.03 : 0.45;
+                double setPos = !ziplineRightPosition ? ZRi : 0.45;
                 ziplineRight.setPosition(setPos);
                 ziplineRightPosition = !ziplineRightPosition;
+
+                counter = 0;
+            }
+
+            if (gamepad1.y) { // scaling
+                scaleFactor = scaling ? 0.70 : 1;
+                scaling != scaling;
 
                 counter = 0;
             }
         }
 
         // scale motor inputs
-        // [[TODO: WTF are we doing casting double to float when original variable is a double?!]]
-        ThrottleLeft = (float)scaleInputs(ThrottleLeft);
-        ThrottleRight = (float)scaleInputs(ThrottleRight);
-        //AngleLeft = (float)scaleInputs(AngleLeft);
-        Angle = (float)scaleInputs(Angle);
-        //ExtendLeft = (float)scaleInputs(ExtendLeft);
-        Extend = (float)scaleInputs(Extend);
+        ThrottleLeft = scaleInputs(ThrottleLeft);
+        ThrottleRight = scaleInputs(ThrottleRight);
+        ThrottleRod = scaleInputs(ThrottleRod);
 
         // set the drive motor power
         drive_left_front.setPower(ThrottleLeft);
         drive_left_back.setPower(ThrottleLeft);
         drive_right_front.setPower(ThrottleRight);
         drive_right_back.setPower(ThrottleRight);
+
+        // set the rod power
+        if(scaling) {
+            double ThrottleRodNew = ThrottleRod / scaleFactor;
+            lift.setPower(ThrottleRodNew);
+        }
+        else {lift.setPower(ThrottleRod);}
 
         counter++;
     }
@@ -137,6 +144,11 @@ public class Teleop5459 extends Base5459 {
         }
 
         // return scaled value.
+
+        if(facButt) {
+            dScale *= factur;
+        }
+
         return dScale;
     }
 }
