@@ -137,10 +137,7 @@ public class Teleop5459 extends Base5459 {
             dScale = scaleArray[index];
         }
 
-        // return scaled value
-        if(scaling) {
-            dScale *= scaleFactor;
-        }
+        dScale *= scaleFactor;
 
         return dScale;
     }
