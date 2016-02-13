@@ -6,7 +6,7 @@ public class Teleop5459 extends Base5459 {
     boolean pushPosition = false;
     boolean scaling = false;
 
-    double scaleFactor = 0.5;
+    double scaleFactor = 1;
 
     public Teleop5459() { }
 
@@ -89,8 +89,8 @@ public class Teleop5459 extends Base5459 {
             }
 
             if (gamepad1.y) { // scaling
-                scaleFactor = scaling ? 0.70 : 1;
-                scaling != scaling;
+                scaling = !scaling;
+                scaleFactor = scaling ? 0.50 : 1;
 
                 counter = 0;
             }
@@ -107,12 +107,7 @@ public class Teleop5459 extends Base5459 {
         drive_right_front.setPower(ThrottleRight);
         drive_right_back.setPower(ThrottleRight);
 
-        // set the rod power
-        if(scaling) {
-            double ThrottleRodNew = ThrottleRod / scaleFactor;
-            lift.setPower(ThrottleRodNew);
-        }
-        else {lift.setPower(ThrottleRod);}
+        lift.setPower(ThrottleRod);
 
         counter++;
     }
@@ -143,10 +138,9 @@ public class Teleop5459 extends Base5459 {
             dScale = scaleArray[index];
         }
 
-        // return scaled value.
-
-        if(facButt) {
-            dScale *= factur;
+        // return scaled value
+        if(scaling) {
+            dScale *= scaleFactor;
         }
 
         return dScale;

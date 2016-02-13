@@ -58,8 +58,8 @@ public abstract class Base5459 extends OpMode {
     public static final double SPBLeft = 0.9;
     public static final double SPBRight = 0.1;
     public static final double RCi = 0.0;
-    public static final double RLi = 0.0;
-    public static final double RRi = 1.0;
+    public static final double RLi = 1.0;
+    public static final double RRi = 0.0;
     public static final double PSi = 0.0;
 
     // sensors
