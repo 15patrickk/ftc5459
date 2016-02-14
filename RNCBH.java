@@ -1,10 +1,8 @@
-
-
-public class RC_FromBase extends Base5459 {
-
+public class RNCBH extends Base5459 {
     public RNCBH() { }
 
     int v_state = 0;
+    
     @Override
     public void loop() {
         switch (v_state) {
