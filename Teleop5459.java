@@ -70,6 +70,14 @@ public class Teleop5459 extends Base5459 {
 
                 counter = 0;
             }
+		
+    		if (gamepad2.a) {
+    			double setPos = !pushPosition ? PSi : 0.2;
+    			push.setPosition(setPos);
+    			pushPosition = !pushPosition;
+
+    			counter = 0;
+    		}
 
             if (gamepad1.x) { // toggle L zipline
                 double setPos = !ziplineLeftPosition ? ZLi : 0.55;
