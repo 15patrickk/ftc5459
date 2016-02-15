@@ -7,8 +7,11 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+//import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
+import android.util.Log;
+import com.qualcomm.robotcore.exception.RobotCoreException;
+import newinventions.AdafruitIMU;
 
 /*  The downside of using the same base class for autonomous and teleop is that
     autonomous now uses the regular opmode.
@@ -67,6 +70,7 @@ public abstract class Base5459 extends OpMode {
     public ModernRoboticsI2cColorSensor color;
     public ModernRoboticsAnalogOpticalDistanceSensor opticalLeft;
     public ModernRoboticsAnalogOpticalDistanceSensor opticalRight;
+    public AdafruitIMU imu;
 
     // ======= CONSTANTS =======
     final int debounceThreshold = 75;
@@ -75,6 +79,7 @@ public abstract class Base5459 extends OpMode {
     int counter = 0;
     int v_state = 0;
     double gyro_rotations = 0;
+    long systemTime;
 
     // ======= PID VARS =======
     long lastTime;
@@ -82,6 +87,12 @@ public abstract class Base5459 extends OpMode {
     double errSum, lastInput;
     double kp, ki, kd;
     int SampleTime = 1000;
+
+    // ======= IMU VARS =======
+
+    volatile double[] rollAngle = new double[2];
+    volatile double[] pitchAngle = new double[2];
+    volatile double[] yawAngle = new double[2];
 
     // ======= METHODS =======
 
@@ -169,6 +180,9 @@ public abstract class Base5459 extends OpMode {
     }
 
     public void initialization() throws InterruptedException {
+
+        systemTime = System.nanoTime();
+
         drive_left_front = hardwareMap.dcMotor.get(DL);
         drive_left_back = hardwareMap.dcMotor.get(DL);
         drive_left_front.setDirection(DcMotor.Direction.REVERSE);
@@ -195,6 +209,15 @@ public abstract class Base5459 extends OpMode {
         opticalLeft = (ModernRoboticsAnalogOpticalDistanceSensor) hardwareMap.opticalDistanceSensor.get("OpticalLeft");
         opticalRight = (ModernRoboticsAnalogOpticalDistanceSensor) hardwareMap.opticalDistanceSensor.get("OpticalRight");
 
+        try{ imu = new AdafruitIMU(hardwareMap, "IMU",
+                (byte)(AdafruitIMU.BNO055_ADDRESS_A * 2),
+                (byte)AdafruitIMU.OPERATION_MODE_IMU);
+        } catch (RobotCoreException e){
+            Log.i("FtcRobotController", "Exception: " + e.getMessage());
+        }
+        Log.i("FtcRobotController", "IMU init finished in: "
+                + (-(systemTime - (systemTime = System.nanoTime()))) + " ns.");
+
         // SERVO INITIALIZATIONS
         ziplineLeft.setPosition(ZLi);
         ziplineRight.setPosition(ZRi);
@@ -210,6 +233,11 @@ public abstract class Base5459 extends OpMode {
         while (gyro.isCalibrating()) {
             Thread.sleep(50);
         }
+
+        systemTime = System.nanoTime;
+        imu.startIMU();
+        Log.i("FtcRobotController", "IMU Start finished in: "
+                + (-(systemTime - (systemTime = System.nanoTime()))) + " ns.");
 
     }
 }

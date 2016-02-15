@@ -5,6 +5,11 @@ public class RNCBH extends Base5459 {
     
     @Override
     public void loop() {
+
+        imu.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+
+        \\use the quaternions! yawAngle[1], pitchAngle[1], rollAngle[1].
+
         switch (v_state) {
             case 0:
                 wire.setPosition(0.5);
