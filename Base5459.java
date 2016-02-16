@@ -71,10 +71,15 @@ public abstract class Base5459 extends OpMode {
     // ======= CONSTANTS =======
     final int debounceThreshold = 75;
 
+    final double clear_wall = 0;
+    final double beacon = 0; // DETERMINE THESE
+    final double ramp = 0;
+
     // ======= STATE VARS =======
     int counter = 0;
     int v_state = 0;
     double gyro_rotations = 0;
+    int number_of_blocks = 0;
 
     // ======= PID VARS =======
     long lastTime;
@@ -169,6 +174,32 @@ public abstract class Base5459 extends OpMode {
         drive_left_front.setPower(0);
         drive_right_back.setPower(0);
         drive_left_back.setPower(0);
+    }
+
+    public void drive_until(double distance, double speed, int surface) {
+
+        switch(surface) {
+            case 0:
+                distance *= clear_wall;
+                break;
+            case 1:
+                distance *= beacon;
+                break;
+            case 2:
+                distance *= ramp;
+                break;
+        }
+
+        while(opticalLeft.getLightDetected() < distance) {
+            drive_left_front.setPower(speed);
+            drive_left_back.setPower(speed);
+            drive_right_front.setPower(speed);
+            drive_right_back.setPower(speed);
+        }
+        drive_left_front.setPower(0.0);
+        drive_left_back.setPower(0.0);
+        drive_right_front.setPower(0.0);
+        drive_right_back.setPower(0.0);
     }
 
     public void release_lift() { } // [[TODO: implement]]
