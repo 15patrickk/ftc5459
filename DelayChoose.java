@@ -13,8 +13,11 @@ public class DelayChoose extends OpMode {
     boolean dpadUp = false;
     boolean dpadDown = false;
 
-    public DelayChoose() {
-        timeDelay.delete() // purge old delay on runtime
+    public DelayChoose() {}
+
+    @Override
+    public void init() {
+        timeDelay.delete(); // purge old delay on runtime
     }
 
     @Override
@@ -23,7 +26,7 @@ public class DelayChoose extends OpMode {
         String timeDisplay = String.format("Time: %d", waitTime);
         telemetry.addData("01", timeDisplay);
         if(!hasChosen) { telemetry.addData("02", "Choosing..."); }
-        else { telemetry.addData("02", "Delay chosen! Change OpMode now.");
+        else { telemetry.addData("02", "Delay chosen! Change OpMode now."); }
 
         // read the gamepads. DPad must be released between each press.
         if(gamepad1.dpad_up && !dpadUp) {
@@ -37,7 +40,7 @@ public class DelayChoose extends OpMode {
                 hasChosen = true;
                 PrintWriter pw = new PrintWriter(timeDelay);
                 pw.println(waitTime);
-                pw.close()
+                pw.close();
             }
             catch(Exception e) {
                 telemetry.addData("03", "Unable to write out to file!");

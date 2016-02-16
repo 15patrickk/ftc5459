@@ -59,5 +59,6 @@ public class FtcOpModeRegister implements OpModeRegister {
       manager.register("TeleOp", Teleop5459.class);
       manager.register("RC test", RC_FromBase.class);
       manager.register("AutonomousBase_DNR", AutonomousBase5459.class);
+      manager.register("Delay Chooser", DelayChoose.class);
   }
 }
