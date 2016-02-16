@@ -157,6 +157,20 @@ public abstract class Base5459 extends OpMode {
         drive_right_back.setPower(0);
     }
 
+    public void drive(double distance, double speed) {
+        double encoder_target = distance*(1120/(6*Math.PI));
+        while(drive_right_front.getCurrentPosition() < encoder_target) {
+            drive_right_front.setPower(speed);
+            drive_left_front.setPower(speed);
+            drive_right_back.setPower(speed);
+            drive_left_back.setPower(speed);
+        }
+        drive_right_front.setPower(0);
+        drive_left_front.setPower(0);
+        drive_right_back.setPower(0);
+        drive_left_back.setPower(0);
+    }
+
     public void release_lift() { } // [[TODO: implement]]
 
     @Override
