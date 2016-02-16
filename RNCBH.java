@@ -1,7 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-public class RC_FromBase extends Base5459 {
-    public RC_FromBase() { }
+public class RNCBH extends Base5459 {
+    public RNCBH() { }
 
     int v_state = 0;
     @Override
