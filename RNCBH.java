@@ -3,6 +3,8 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 public class RNCBH extends Base5459 {
     public RNCBH() { }
 
+    double distance_from_wall = 0;
+
     int v_state = 0;
     @Override
     public void loop() {
@@ -43,7 +45,26 @@ public class RNCBH extends Base5459 {
                 catch(Exception ex) { }
                 v_state++;
                 break;
-            case 6: // sense distance from wall; deduce number of blocks between wall and robot
+            case 6: // sense distance from wall
+                distance_from_wall = opticalLeft.getLightDetected() * clear_wall;
+                v_state++;
+                break;
+            case 7: // sense color of beacon light (LEFT SIDE)
+                color.enableLed(false);
+                if(color.blue) {
+                    if(distance_from_wall < 3) { // MEASURE/TEST
+                        // swing a little
+                    } else {
+                        // swing a lot
+                    }
+                } else {
+                    if(distance_from_wall < 3) {
+                        // swing backwards, a little
+                    } else {
+                        // swing backwards, a lot
+                    }
+                }
+                v_state++;
                 break;
 
             default:

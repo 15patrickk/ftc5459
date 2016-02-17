@@ -79,7 +79,6 @@ public abstract class Base5459 extends OpMode {
     int counter = 0;
     int v_state = 0;
     double gyro_rotations = 0;
-    int number_of_blocks = 0;
 
     // ======= PID VARS =======
     long lastTime;
