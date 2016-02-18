@@ -28,27 +28,27 @@ public class DelayChoose extends OpMode {
         if(!hasChosen) { telemetry.addData("02", "Choosing..."); }
         else { telemetry.addData("02", "Delay chosen! Change OpMode now."); }
 
-        // read the gamepads. DPad must be released between each press.
-        if(gamepad1.dpad_up && !dpadUp) {
-            waitTime++;
-        }
-        else if(gamepad1.dpad_down && !dpadDown) {
-            waitTime = waitTime > 0 ? waitTime-- : waitTime; // clip the time at 0
-        }
-        else if(gamepad1.a) {
-            try {
-                hasChosen = true;
-                PrintWriter pw = new PrintWriter(timeDelay);
-                pw.println(waitTime);
-                pw.close();
+        // read the gamepads. if any key is press, add a small debounce delay
+        if(gamepad1.dpad_up || gamepad1.dpad_down || gamepad1.a) {
+            if(gamepad1.dpad_up) {
+                waitTime++;
             }
-            catch(Exception e) {
-                telemetry.addData("03", "Unable to write out to file!");
+            else if(gamepad1.dpad_down) {
+                waitTime = waitTime > 0 ? waitTime-- : waitTime; // clip the time at 0
             }
+            else if(gamepad1.a) {
+                try {
+                    hasChosen = true;
+                    PrintWriter pw = new PrintWriter(timeDelay);
+                    pw.println(waitTime);
+                    pw.close();
+                }
+                catch(Exception e) {
+                    telemetry.addData("03", "Unable to write out to file!");
+                }
+            }
+            try { Thread.sleep(300); }
+            catch(Exception e) { }
         }
-
-        // set the debouncing variables to the current gamepad state
-        dpadUp = gamepad1.dpad_up;
-        dpadDown = gamepad1.dpad_down;
     }
 }
