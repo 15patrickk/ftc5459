@@ -49,6 +49,6 @@ public class FtcOpModeRegister implements OpModeRegister {
      */
       manager.register("NullOp", NullOp.class);
       manager.register("TeleOp", Teleop5459.class);
-      manager.register("RC autonomous test", RC_FromBase.class);
+      manager.register("RNCBH", RNCBH.class);
   }
 }

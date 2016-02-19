@@ -51,7 +51,7 @@ public class RNCBH extends Base5459 {
                 break;
             case 7: // sense color of beacon light (LEFT SIDE)
                 color.enableLed(false);
-                if(color.blue) {
+                if(color.blue() > 127) {
                     if(distance_from_wall < 3) { // MEASURE/TEST
                         // swing a little
                     } else {
