@@ -1,10 +1,19 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import android.app.Activity;
+import android.media.MediaPlayer;
+import android.content.Context;
+import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;
+import com.qualcomm.ftcrobotcontroller.R;
+
 public class Teleop5459 extends Base5459 {
     boolean ziplineLeftPosition = false; // false = 0.8 /\ true = 0.4
     boolean ziplineRightPosition = false; // false = 0.2 /\ true = 0.6
     boolean pushPosition = false;
     boolean scaling = false;
+
+    static FtcRobotControllerActivity Test1;
+    public FtcRobotControllerActivity Test2;
 
     double scaleFactor = 1;
 
@@ -70,7 +79,7 @@ public class Teleop5459 extends Base5459 {
 
                 counter = 0;
             }
-		
+
     		if (gamepad2.a) {
     			double setPos = !pushPosition ? PSi : 0.5;
     			push.setPosition(setPos);
@@ -119,6 +128,15 @@ public class Teleop5459 extends Base5459 {
                 counter = 0;
             }
 
+            if(gamepad1.dpad_down) { // John Cena
+                Test1 = new FtcRobotControllerActivity();
+                Test1.Player(R.raw.andhisnameis);
+            }
+
+            if(gamepad1.dpad_left) {
+                Test2 = new FtcRobotControllerActivity();
+                Test2.Player(R.raw.explositonbig);
+            }
         }
 
         // scale motor inputs
