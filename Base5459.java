@@ -10,14 +10,6 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 
-/*  The downside of using the same base class for autonomous and teleop is that
-    autonomous now uses the regular opmode.
-
-    The ramifications of this need to be investigated. At the very least,
-    we will have to override `start()` instead of `runOpMode()`. We may end up
-    overriding `loop()` and using a state-machine pattern.
-*/
-
 public abstract class Base5459 extends OpMode {
     public Base5459() { }
 
@@ -69,7 +61,7 @@ public abstract class Base5459 extends OpMode {
     public ModernRoboticsAnalogOpticalDistanceSensor opticalRight;
 
     // ======= CONSTANTS =======
-    final int debounceThreshold = 75;
+    final int debounceThreshold = 50;
 
     final double clear_wall = 0;
     final double beacon = 0; // DETERMINE THESE
@@ -176,7 +168,6 @@ public abstract class Base5459 extends OpMode {
     }
 
     public void drive_until(double distance, double speed, int surface) {
-
         switch(surface) {
             case 0:
                 distance *= clear_wall;
@@ -254,6 +245,5 @@ public abstract class Base5459 extends OpMode {
         while (gyro.isCalibrating()) {
             Thread.sleep(50);
         }
-
     }
 }

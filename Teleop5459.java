@@ -64,7 +64,7 @@ public class Teleop5459 extends Base5459 {
             }
 
             if (gamepad1.a) { // toggle block pusher up/down
-                double setPos = !pushPosition ? PSi : 0.2;
+                double setPos = !pushPosition ? PSi : 0.5;
                 push.setPosition(setPos);
                 pushPosition = !pushPosition;
 
@@ -72,12 +72,29 @@ public class Teleop5459 extends Base5459 {
             }
 		
     		if (gamepad2.a) {
-    			double setPos = !pushPosition ? PSi : 0.2;
+    			double setPos = !pushPosition ? PSi : 0.5;
     			push.setPosition(setPos);
     			pushPosition = !pushPosition;
 
     			counter = 0;
     		}
+
+            // toggles for third zipline
+                if (gamepad1.left_bumper) { // toggle L zipline
+                    double setPos = !ziplineLeftPosition ? ZLi : 0.8;
+                    ziplineLeft.setPosition(setPos);
+                    ziplineLeftPosition = !ziplineLeftPosition;
+
+                    counter = 0;
+                }
+
+                if (gamepad1.right_bumper) { //s toggle R zipline
+                    double setPos = !ziplineRightPosition ? ZRi : 0.20;
+                    ziplineRight.setPosition(setPos);
+                    ziplineRightPosition = !ziplineRightPosition;
+
+                    counter = 0;
+                }
 
             if (gamepad1.x) { // toggle L zipline
                 double setPos = !ziplineLeftPosition ? ZLi : 0.55;
@@ -87,7 +104,7 @@ public class Teleop5459 extends Base5459 {
                 counter = 0;
             }
 
-            if (gamepad1.b) { // toggle R zipline
+            if (gamepad1.b) { //s toggle R zipline
                 double setPos = !ziplineRightPosition ? ZRi : 0.45;
                 ziplineRight.setPosition(setPos);
                 ziplineRightPosition = !ziplineRightPosition;
@@ -97,10 +114,11 @@ public class Teleop5459 extends Base5459 {
 
             if (gamepad1.y) { // scale drive motors
                 scaling = !scaling;
-                scaleFactor = scaling ? 0.50 : 1;
+                scaleFactor = scaling ? 0.2 : 1;
 
                 counter = 0;
             }
+
         }
 
         // scale motor inputs
@@ -149,4 +167,5 @@ public class Teleop5459 extends Base5459 {
 
         return dScale;
     }
+
 }
