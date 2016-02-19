@@ -10,14 +10,6 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 
-/*  The downside of using the same base class for autonomous and teleop is that
-    autonomous now uses the regular opmode.
-
-    The ramifications of this need to be investigated. At the very least,
-    we will have to override `start()` instead of `runOpMode()`. We may end up
-    overriding `loop()` and using a state-machine pattern.
-*/
-
 public abstract class Base5459 extends OpMode {
     public Base5459() { }
 
@@ -69,7 +61,11 @@ public abstract class Base5459 extends OpMode {
     public ModernRoboticsAnalogOpticalDistanceSensor opticalRight;
 
     // ======= CONSTANTS =======
-    final int debounceThreshold = 75;
+    final int debounceThreshold = 50;
+
+    final double clear_wall = 0;
+    final double beacon = 0; // DETERMINE THESE
+    final double ramp = 0;
 
     // ======= STATE VARS =======
     int counter = 0;
@@ -157,6 +153,45 @@ public abstract class Base5459 extends OpMode {
         drive_right_back.setPower(0);
     }
 
+    public void drive(double distance, double speed) {
+        double encoder_target = distance*(1120/(6*Math.PI));
+        while(drive_right_front.getCurrentPosition() < encoder_target) {
+            drive_right_front.setPower(speed);
+            drive_left_front.setPower(speed);
+            drive_right_back.setPower(speed);
+            drive_left_back.setPower(speed);
+        }
+        drive_right_front.setPower(0);
+        drive_left_front.setPower(0);
+        drive_right_back.setPower(0);
+        drive_left_back.setPower(0);
+    }
+
+    public void drive_until(double distance, double speed, int surface) {
+        switch(surface) {
+            case 0:
+                distance *= clear_wall;
+                break;
+            case 1:
+                distance *= beacon;
+                break;
+            case 2:
+                distance *= ramp;
+                break;
+        }
+
+        while(opticalLeft.getLightDetected() < distance) {
+            drive_left_front.setPower(speed);
+            drive_left_back.setPower(speed);
+            drive_right_front.setPower(speed);
+            drive_right_back.setPower(speed);
+        }
+        drive_left_front.setPower(0.0);
+        drive_left_back.setPower(0.0);
+        drive_right_front.setPower(0.0);
+        drive_right_back.setPower(0.0);
+    }
+
     public void release_lift() { } // [[TODO: implement]]
 
     @Override
@@ -210,6 +245,5 @@ public abstract class Base5459 extends OpMode {
         while (gyro.isCalibrating()) {
             Thread.sleep(50);
         }
-
     }
 }
