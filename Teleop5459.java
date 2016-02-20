@@ -45,12 +45,12 @@ public class Teleop5459 extends Base5459 {
             }
 
             if (gamepad2.dpad_left) { // takes C rod left
-                rodCenter.setPosition(0.6);
+                rodCenter.setPosition(0.54);
                 counter = 0;
             } else if (gamepad2.dpad_right) { // moves C rod right
-                rodCenter.setPosition(0.4);
+                rodCenter.setPosition(0.46);
                 counter = 0;
-            } else { // stops C rod motiong
+            } else { // stops C rod motion
                 rodCenter.setPosition(0.5);
             }
 

@@ -48,7 +48,7 @@ public abstract class Base5459 extends OpMode {
     public static final double RCi = 0.0;
     public static final double RLi = 1.0;
     public static final double RRi = 0.0;
-    public static final double PSi = 0.0;
+    public static final double PSi = 1.0;
     public static final double WSi = 0.0;
     public static final double CBi = 0.5;
     public static final double ZLi = 0.0;
