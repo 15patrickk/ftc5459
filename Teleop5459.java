@@ -45,22 +45,13 @@ public class Teleop5459 extends Base5459 {
             }
 
             if (gamepad2.dpad_left) { // takes C rod left
-                double posC = rodCenter.getPosition();
-
-                if((posC - 0.05) > 0.0) {
-
-                    rodCenter.setPosition(posC - 0.05);
-                    counter = 0;
-                }
-            }
-
-            if (gamepad2.dpad_right) { // takes C rod right
-                double posC = rodCenter.getPosition();
-                if((posC + 0.05) < 1.0) {
-
-                    rodCenter.setPosition(posC + 0.05);
-                    counter = 0;
-                }
+                rodCenter.setPosition(0.6);
+                counter = 0;
+            } else if (gamepad2.dpad_right) { // moves C rod right
+                rodCenter.setPosition(0.4);
+                counter = 0;
+            } else { // stops C rod motiong
+                rodCenter.setPosition(0.5);
             }
 
             if (gamepad1.a) { // toggle block pusher up/down
@@ -136,7 +127,7 @@ public class Teleop5459 extends Base5459 {
 
                 counter = 0;
             }
-
+            telemetry.addData("CR Servo", rodCenter.getPosition());
         }
 
         // scale motor inputs
