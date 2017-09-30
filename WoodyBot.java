@@ -19,7 +19,7 @@ import com.vuforia.ar.pl.SensorController;
  * For future changes, consult comments below.
  *
  */
-public class NicoleBot {
+public class WoodyBot {
     // define all hardware on robot
 
     public DcMotor FrontMotorLeft;
@@ -29,7 +29,7 @@ public class NicoleBot {
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
 
-    public NicoleBot(){ }
+    public WoodyBot(){ }
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap) {
@@ -39,10 +39,11 @@ public class NicoleBot {
         FrontMotorLeft = hwMap.dcMotor.get("FrontMotorLeft");
         FrontMotorRight = hwMap.dcMotor.get("FrontMotorRight");
 
-         // Set all motors to zero power
+        // initialize servos
+
+         // Set all motors and servos to zero power
         FrontMotorLeft.setPower(0.0);
         FrontMotorRight.setPower(0.0);
-
     }
 
     /***

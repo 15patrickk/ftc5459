@@ -32,17 +32,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 
-@TeleOp(name="Basic TeleOp", group="NicoleBot")
+@TeleOp(name="5459 Teleop", group="WoodyBot")
 public class BasicTeleop extends OpMode {
 
     /* Declare OpMode members. */
-    NicoleBot         robot   = new NicoleBot();   // Use robot's hardware
+    WoodyBot         robot   = new WoodyBot();   // Use robot's hardware
     private ElapsedTime     runtime = new ElapsedTime();
 
     // code runs ONCE when driver hits INIT
@@ -70,12 +68,13 @@ public class BasicTeleop extends OpMode {
     // put driver controls (drive motors, servos, etc.) HERE
     @Override
     public void loop() {
+        double turbo = gamepad1.right_trigger;
         double ThrottleLeft = gamepad1.left_stick_y;
         double ThrottleRight = gamepad1.right_stick_y;
 
 
         robot.FrontMotorLeft.setPower(ThrottleLeft);
-        robot.FrontMotorRight.setPower(ThrottleRight);
+        robot.FrontMotorRight.setPower(-ThrottleRight);
 
         // telemetry
         telemetry.addData("left", "%.2f", ThrottleLeft);

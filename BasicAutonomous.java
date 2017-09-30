@@ -5,12 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="BasicAutonomous", group="NicoleBot")
+@Autonomous(name="BasicAutonomous", group="WoodyBot")
 public class BasicAutonomous extends LinearOpMode {
 
     /* Declare OpMode members. */
-    NicoleBot         robot   = new NicoleBot();   //
-
+    WoodyBot         robot   = new WoodyBot();   //
 
     @Override
     public void runOpMode() throws InterruptedException {
