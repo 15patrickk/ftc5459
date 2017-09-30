@@ -24,6 +24,7 @@ public class WoodyBot {
 
     public DcMotor FrontMotorLeft;
     public DcMotor FrontMotorRight;
+    public DcMotor Elevator;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -36,14 +37,19 @@ public class WoodyBot {
         hwMap = ahwMap; // reference to hardware map
 
         // initialize motors
+        Elevator = hwMap.dcMotor.get("Elevator");
+        Elevator.setDirection(DcMotor.Direction.REVERSE);
         FrontMotorLeft = hwMap.dcMotor.get("FrontMotorLeft");
+        FrontMotorLeft.setDirection(DcMotor.Direction.REVERSE);
         FrontMotorRight = hwMap.dcMotor.get("FrontMotorRight");
+        FrontMotorLeft.setDirection(DcMotor.Direction.REVERSE);
 
         // initialize servos
 
          // Set all motors and servos to zero power
         FrontMotorLeft.setPower(0.0);
         FrontMotorRight.setPower(0.0);
+        Elevator.setPower(0.0);
     }
 
     /***

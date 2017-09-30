@@ -52,7 +52,7 @@ public class BasicTeleop extends OpMode {
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Driver");    //
+        telemetry.addData("Say", "I like potatos");    //
         updateTelemetry(telemetry);
     }
 
@@ -68,17 +68,44 @@ public class BasicTeleop extends OpMode {
     // put driver controls (drive motors, servos, etc.) HERE
     @Override
     public void loop() {
-        double turbo = gamepad1.right_trigger;
+        double ThrottleUp = gamepad1.left_trigger;
+        boolean Throttledown = gamepad1.left_bumper;
         double ThrottleLeft = gamepad1.left_stick_y;
         double ThrottleRight = gamepad1.right_stick_y;
 
+        // this is technically the correct way to do this. -PK
+//        double ElevatorPower = 0;
+//        if(gamepad1.left_bumper == true) {
+//            ElevatorPower = -1;
+//            telemetry.addData("Elevator","UP");
+//        }
+//        else if(gamepad1.left_trigger > 0.85) {
+//            ElevatorPower = 1;
+//            telemetry.addData("Elevator", "DOWN");
+//        }
+//        else {
+//            ElevatorPower = 0;
+//            telemetry.addData("Elevator","OFF");
+//        }
 
+        if(Throttledown == true)
+        {
+            robot.Elevator.setPower(-1);
+            telemetry.addData("elevator","on");
+        }
+        else if(Throttledown == false)
+        {
+            robot.Elevator.setPower(0);
+            telemetry.addData("elevator","off");
+        }
+        robot.Elevator.setPower(ThrottleUp);
         robot.FrontMotorLeft.setPower(ThrottleLeft);
         robot.FrontMotorRight.setPower(-ThrottleRight);
 
         // telemetry
         telemetry.addData("left", "%.2f", ThrottleLeft);
         telemetry.addData("right", "%.2f", ThrottleRight);
+        telemetry.addData("up",".%.2f",ThrottleUp);
 
         updateTelemetry(telemetry);
     }
