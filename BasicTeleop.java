@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -78,32 +79,38 @@ public class BasicTeleop extends OpMode {
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "I like potatos");    //
+        telemetry.addData("Say", "I like potatoes");    //
         updateTelemetry(telemetry);
-        if (robot.CS instanceof SwitchableLight) {
+        /**if (robot.CS instanceof SwitchableLight) {
             ((SwitchableLight)robot.CS).enableLight(true);
         }
+         **/
+        robot.FrontMotorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.FrontMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     // code runs REPEATEDLY after the driver hits INIT, but before they hit PLAY
     @Override
-    public void init_loop() {
-    }
+    public void init_loop() { }
 
     // code runs ONCE when the driver hits PLAY
     @Override
     public void start() {
+        robot.ColorSense.setPosition(.4);
     }
 
     // code runs REPEATEDLY when driver hits play
     // put driver controls (drive motors, servos, etc.) HERE
     @Override
     public void loop() {
-        //int color = robot.CS.red();
+//        int red = robot.CS.red();
+//        int blue = robot.CS.blue();
+//        int alpha = robot.CS.alpha();
+
         double elevup = gamepad2.right_trigger;
         boolean elevdown = gamepad2.right_bumper;
-        double ThrottleLeft = gamepad1.left_stick_y;
-        double ThrottleRight = gamepad1.right_stick_y;
+        double ThrottleLeft = gamepad1.left_stick_y / 1.9;
+        double ThrottleRight = gamepad1.right_stick_y / 1.9;
         boolean dooropen = gamepad2.b;
         boolean doorclose = gamepad2.a;
         double extendin = gamepad2.left_trigger;
@@ -112,6 +119,10 @@ public class BasicTeleop extends OpMode {
         boolean rotatedown = gamepad2.x;
         boolean clawclose = gamepad2.dpad_up;
         boolean clawopen = gamepad2.dpad_down;
+        boolean left = gamepad1.dpad_left;
+        boolean right = gamepad1.dpad_right;
+        boolean stupidopen = gamepad2.left_stick_button;
+        boolean stupidclose = gamepad2.right_stick_button;
 
 
         // this is technically the correct way to do this. -PK
@@ -128,18 +139,40 @@ public class BasicTeleop extends OpMode {
 //            ElevatorPower = 0;
 //            telemetry.addData("Elevator","OFF");
 //        }
-
+//if(right == true)
+//{
+   // robot.SideMotor.setPower(1.0);
+//}
+//if(right == false)
+//{
+ //   robot.SideMotor.setPower(0.0);
+//}
+//if(left == true)
+//{
+  //  robot.SideMotor.setPower(-1.0);
+//}
+//if(left == false)
+//{
+   // robot.SideMotor.setPower(0.0);
+//}
+        if(stupidopen==true)
+        {
+            robot.Stupid.setPosition(1);
+        }
+        else if (stupidclose) {
+                robot.Stupid.setPosition(0);
+        }
         if (rotateup == true) {
             robot.rotator.setPosition(.7);
         }
-        if (rotatedown == true) {
-            robot.rotator.setPosition(0.0);
+        else if (rotatedown == true) {
+            robot.rotator.setPosition(0);
         }
         if (clawopen) {
             robot.claw.setPosition(1);
         }
-        if (clawclose) {
-            robot.claw.setPosition(0.0);
+        else if (clawclose) {
+            robot.claw.setPosition(0.5);
         }
         if (extendout) {
             robot.Extender.setPower(.5);
@@ -151,15 +184,14 @@ public class BasicTeleop extends OpMode {
             robot.right_door.setPosition(0.0);
             telemetry.addData("door", "open");
         }
-        if (doorclose) {
+        else if (doorclose) {
             robot.left_door.setPosition(.9);
             robot.right_door.setPosition(0.3);
             telemetry.addData("door", "closed");
 
-
         }
-        if (elevup > .01) {
-            robot.Elevator1.setPower(-1);
+        if (elevup > 0) {
+            robot.Elevator1.setPower(-1.0);
             telemetry.addData("elevator", "up");
         } else if (elevup == 0) {
             robot.Elevator1.setPower(0.0);
@@ -174,40 +206,52 @@ public class BasicTeleop extends OpMode {
             telemetry.addData("elevator", " stopped");
         }
 
-        if (Rposition > 1) {
-            Rposition = 1;
-        } else if (Rposition < 0) {
-            Rposition = 0;
-        }
-        if (Lposition > 1) {
-            Lposition = 1;
-        } else if (Rposition < 0) {
-            Rposition = 0;
-        }
+//        if (Rposition > 1) {
+//            Rposition = 1;
+//        } else if (Rposition < 0) {
+//            Rposition = 0;
+//        }
+//        if (Lposition > 1) {
+//            Lposition = 1;
+//        } else if (Rposition < 0) {
+//            Rposition = 0;
+//        }
 
+//        if (red > blue) {
+//            telemetry.addData("Say", "RED");
+//        }
+//        else if (blue > red) {
+//            telemetry.addData("Say", "BLUE");
+//        }
+//        else {
+//            telemetry.addData("Say", "NONE");
+//        }
 
-        robot.FrontMotorLeft.setPower(ThrottleLeft / 1.5);
-        robot.FrontMotorRight.setPower(-ThrottleRight / 1.5);
-        //color = robot.CS.red();
+        robot.FrontMotorLeft.setPower(ThrottleLeft);
+        robot.FrontMotorRight.setPower(ThrottleRight);
+
         // telemetry
-        //telemetry.addData("Red",color);
+//        telemetry.addData("Red",red);
+//        telemetry.addData("Blue",blue);
+        //telemetry.addData("Alpha", alpha);
         telemetry.addData("left", "%.2f", ThrottleLeft);
         telemetry.addData("right", "%.2f", ThrottleRight);
-        NormalizedRGBA colors;
-        colors = robot.CS.getNormalizedColors();
+//        telemetry.addData("time", "%d", (long)robot.period.milliseconds() - start);
+        //NormalizedRGBA colors;
+        //colors = robot.CS.getNormalizedColors();
 
         /** Use telemetry to display feedback on the driver station. We show the conversion
          * of the colors to hue, saturation and value, and display the the normalized values
          * as returned from the sensor.
          * @see <a href="http://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html">HSV</a>*/
 
-
+        /**
         telemetry.addLine()
                 .addData("a", "%.3f", colors.alpha)
                 .addData("r", "%.3f", colors.red)
                 .addData("g", "%.3f", colors.green)
                 .addData("b", "%.3f", colors.blue);
-
+        **/
 
         updateTelemetry(telemetry);
     }

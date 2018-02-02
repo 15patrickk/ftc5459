@@ -30,17 +30,20 @@ public class WoodyBot {
  public DcMotor FrontMotorRight;
  public DcMotor Elevator1;
  public DcMotor Extender;
+ //public DcMotor SideMotor;
  public Servo right_door;
  public Servo left_door;
  public Servo claw;
  public Servo rotator;
- public NormalizedColorSensor CS;
+ public Servo ColorSense;
+ public ColorSensor CS;
+ public Servo Stupid;
 
 
  /* local OpMode members. */
 
  HardwareMap hwMap           =  null;
- private ElapsedTime period  = new ElapsedTime();
+ protected ElapsedTime period  = new ElapsedTime();
 
  public WoodyBot(){ }
 
@@ -53,24 +56,33 @@ public class WoodyBot {
  Extender = hwMap.dcMotor.get("Extend");
  Elevator1 = hwMap.dcMotor.get("Elevator1");
  FrontMotorLeft = hwMap.dcMotor.get("FrontMotorLeft");
+  FrontMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
  FrontMotorRight = hwMap.dcMotor.get("FrontMotorRight");
+  FrontMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+  Stupid = hwMap.servo.get("stupidstick");
+ //SideMotor = hwMap.dcMotor.get("SideMotor");
  //CS = hwMap.colorSensor.get("CS");
  right_door = hwMap.servo.get("right_door");
  left_door = hwMap.servo.get("left_door");
  claw = hwMap.servo.get("claw");
  rotator = hwMap.servo.get("rot");
-  CS = hwMap.get(NormalizedColorSensor.class, "CS");
+  CS = hwMap.get(ColorSensor.class, "CS");
+  ColorSense = hwMap.get(Servo.class, "Stick");
  // initialize servos
 
  // Set all motors and servos to zero power
  FrontMotorLeft.setPower(0.0);
  FrontMotorRight.setPower(0.0);
  Elevator1.setPower(0.0);
+ // SideMotor.setPower(0.0);
+  ColorSense.setPosition(.27);
  //right_door.setPosition(0.0);   //Enabling these caused the servos to move in init, which is illegal
  //left_door.setPosition(0.0);
- claw.setPosition(0.0);
+ claw.setPosition(1);
  rotator.setPosition(0.5);
-// CS.enableLed(false);
+ CS.enableLed(false);
+
+  Stupid.setPosition(0);
 
  }
 
