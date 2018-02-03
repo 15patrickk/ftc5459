@@ -96,7 +96,8 @@ public class BasicTeleop extends OpMode {
     // code runs ONCE when the driver hits PLAY
     @Override
     public void start() {
-        robot.ColorSense.setPosition(.4);
+        robot.ColorSense.setPosition(.6); // bring arm back up
+        robot.TwistyThingy.setPosition(.5); // rotate back into the robot
     }
 
     // code runs REPEATEDLY when driver hits play

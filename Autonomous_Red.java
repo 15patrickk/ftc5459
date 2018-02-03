@@ -33,47 +33,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import android.graphics.Color;
-
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.hardware.SwitchableLight;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.RobotLog;
-
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 
-@Autonomous(name="Autonomous: KnockOff Blue", group="WoodyBot")
-public class Autonomous_Blue extends LinearOpMode {
-    WoodyBot robot = new WoodyBot();   // Use a Pushbot's hardware
+@Autonomous(name="Autonomous: KnockOff Red", group="WoodyBot")
+public class Autonomous_Red extends LinearOpMode {
+    WoodyBot robot = new WoodyBot();
     private ElapsedTime runtime = new ElapsedTime();
 
     static final double FORWARD_SPEED = 0.7;
@@ -103,7 +69,7 @@ public class Autonomous_Blue extends LinearOpMode {
         int blue = robot.CS.blue();
         sleep(500);
 
-        if(red < blue) { // facing blue ball - move left/CCW to knock off blue ball
+        if(red > blue) { // facing red ball - move left/CCW to knock off red ball
             telemetry.addData("Color", "blue");
             telemetry.update();
             sleep(1000);
@@ -112,7 +78,7 @@ public class Autonomous_Blue extends LinearOpMode {
             robot.ColorSense.setPosition(0.6); // retract arm
             sleep(1500);
         }
-        if(red > blue) { // facing red ball - move right/CW to knock off blue ball
+        if(red < blue) { // facing blue ball - move right/CW to knock off blue ball
             telemetry.addData("Color","red");
             telemetry.update();
             sleep(1000);
