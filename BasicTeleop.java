@@ -181,12 +181,12 @@ public class BasicTeleop extends OpMode {
         }
         if (dooropen) {
             robot.left_door.setPosition(.5);
-            robot.right_door.setPosition(0.0);
+            //robot.right_door.setPosition(0.0);
             telemetry.addData("door", "open");
         }
         else if (doorclose) {
             robot.left_door.setPosition(.9);
-            robot.right_door.setPosition(0.3);
+            //robot.right_door.setPosition(0.3);
             telemetry.addData("door", "closed");
 
         }

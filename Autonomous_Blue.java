@@ -117,24 +117,33 @@ public class Autonomous_Blue extends LinearOpMode {
         int red = robot.CS.red();
         int blue = robot.CS.blue();
         if(red<blue) {
-            robot.FrontMotorRight.setPower(.7);
-            robot.FrontMotorLeft.setPower(.7);
+            robot.ColorSense.setPosition(0);
+            robot.TwistyThingy.setPosition(1);
+            sleep(1500);
+            robot.TwistyThingy.setPosition(0);
+            sleep(1500);
+            robot.TwistyThingy.setPosition(0.5);
+            sleep(1500);
             telemetry.addData("say", "red");
             telemetry.update();
         }
         if(red>blue){
-            robot.FrontMotorLeft.setPower(-.7);
-            robot.FrontMotorRight.setPower(-.7);
+            robot.TwistyThingy.setPosition(0);
+            sleep(1500);
+            robot.TwistyThingy.setPosition(1);
+            sleep(1500);
+            robot.TwistyThingy.setPosition(0.5);
+            sleep(1500);
             telemetry.addData("say","red");
             telemetry.update();
         }
-        sleep(1000);
-        robot.FrontMotorLeft.setPower(0);
-        robot.FrontMotorRight.setPower(0);
-        sleep(1000);
         robot.ColorSense.setPosition(.4);
+        sleep(100);
+        //robot.FrontMotorLeft.setPower(1);
+        //robot.FrontMotorRight.setPower(-1);
         sleep(1000);
-
+        //robot.FrontMotorLeft.setPower(0);
+        //robot.FrontMotorRight.setPower(0);
 
 
 
