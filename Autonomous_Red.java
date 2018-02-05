@@ -89,11 +89,18 @@ public class Autonomous_Red extends LinearOpMode {
         }
         //robot.ColorSense.setPosition(.4);
         sleep(100);
-        robot.FrontMotorLeft.setPower(0.32);
-        robot.FrontMotorRight.setPower(0.32);
+        robot.FrontMotorLeft.setPower(-0.52);
+        robot.FrontMotorRight.setPower(-0.52);
         sleep(1000);
         robot.FrontMotorLeft.setPower(0);
         robot.FrontMotorRight.setPower(0);
+
+        sleep(10);
+        robot.FrontMotorRight.setPower(.1);
+        robot.FrontMotorLeft.setPower(.1);
+        sleep(1000);
+        robot.FrontMotorRight.setPower(0);
+        robot.FrontMotorLeft.setPower(0);
 
         robot.CS.enableLed(false); // fixes hang between autonomous and teleop
         sleep(500);

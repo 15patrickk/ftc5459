@@ -71,15 +71,26 @@ import java.util.List;
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 
-@Autonomous(name="Autonomous: KnockOff Blue", group="WoodyBot")
-public class Autonomous_Blue extends LinearOpMode {
+@Autonomous(name="AutonomousRed", group="WoodyBot")
+public class BasicAutonomous extends LinearOpMode {
+
+    /* Declare OpMode members. */
     WoodyBot robot = new WoodyBot();   // Use a Pushbot's hardware
+
     private ElapsedTime runtime = new ElapsedTime();
+
 
     static final double FORWARD_SPEED = 0.7;
     static final double TURN_SPEED = 0.5;
 
+
+
+
+
     public void runOpMode() {
+
+
+
         /*
          * Initialize the drive system variables.
          * The init() method of the hardware class does all the work here
@@ -93,50 +104,39 @@ public class Autonomous_Blue extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        robot.ColorSense.setPosition(0.65); // arm straight up
-        sleep(1000);
-        robot.TwistyThingy.setPosition(0.13); // rotate sensor into position
-        sleep(1000);
-        robot.ColorSense.setPosition(0.03); // arm down
-        sleep(2000);
+
+
+
+        // Step through each leg of the path, ensuring that the Auto mode has not been stopped along the way
+
+        // Step 1:  Drive forward for 3 seconds
+
+        robot.ColorSense.setPosition(1);
+
+        sleep(4000);
         int red = robot.CS.red();
         int blue = robot.CS.blue();
-        sleep(500);
-
-        if(red < blue) { // facing blue ball - move left/CCW to knock off blue ball
-            telemetry.addData("Color", "blue");
+        if(red<blue) {
+            robot.FrontMotorLeft.setPower(.7);
+            robot.FrontMotorRight.setPower(.7);
+            telemetry.addData("say","blue");
             telemetry.update();
-            sleep(1000);
-            robot.TwistyThingy.setPosition(0);
-            sleep(1500);
-            robot.ColorSense.setPosition(0.6); // retract arm
-            sleep(1500);
         }
-        if(red > blue) { // facing red ball - move right/CW to knock off blue ball
-            telemetry.addData("Color","red");
+        if(red>blue){
+            robot.FrontMotorLeft.setPower(-.7);
+            robot.FrontMotorRight.setPower(-.7);
+            telemetry.addData("say","red");
             telemetry.update();
-            sleep(1000);
-            robot.TwistyThingy.setPosition(0.3); // rotate right
-            sleep(1500);
-            robot.ColorSense.setPosition(0.6); // retract arm
-            sleep(1500);
         }
-        //robot.ColorSense.setPosition(.4);
         sleep(100);
-        robot.FrontMotorLeft.setPower(0.52);
-        robot.FrontMotorRight.setPower(0.52);
-        sleep(1000);
         robot.FrontMotorLeft.setPower(0);
         robot.FrontMotorRight.setPower(0);
-
-        sleep(10);
-        robot.FrontMotorRight.setPower(-.1);
-        robot.FrontMotorLeft.setPower(-.1);
         sleep(1000);
-        robot.FrontMotorLeft.setPower(0);
-        robot.FrontMotorRight.setPower(0);
+        robot.ColorSense.setPosition(.4);
+        sleep(1000);
 
-        robot.CS.enableLed(false); // fixes hang between autonomous and teleop
-        sleep(500);
+
+
+
     }
 }
