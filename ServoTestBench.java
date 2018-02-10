@@ -1,17 +1,31 @@
 package org.firstinspires.ftc.teamcode;
 
+/*
+ * ServoTestBench: debugging aid to determine the numerical positions of two servos.
+ * To change the servos being tested, change the servoA and servoB variables.
+ * To change the starting positions, change servoAPos and servoBPos.
+ * Buttons:
+ *   - X: increase servo A by 0.01
+ *   - A: decrease servo A by 0.01
+ *   - Y: increase servo B by 0.01
+ *   - B: decrease servo B by 0.01
+ *
+ * Patrick Knight, February 2018
+ */
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-/**
- * Created by 5459 on 2/2/2018.
- */
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="Servo test bench")
 public class ServoTestBench extends OpMode {
     WoodyBot robot = new WoodyBot();   // Use robot's hardware
+
+    Servo servoA = robot.TwistyThingy;
     double servoAPos = 1;
-    double servoBPos = 1 ;
+
+    Servo servoB = robot.ColorSense;
+    double servoBPos = 1;
 
     @Override
     public void init() { robot.init(hardwareMap); }
@@ -35,8 +49,8 @@ public class ServoTestBench extends OpMode {
             servoBPos = (servoBPos <= 0.0) ? 0.0 : servoBPos - 0.01;
         }
 
-        robot.TwistyThingy.setPosition(servoAPos);
-        robot.ColorSense.setPosition(servoBPos);
+        servoA.setPosition(servoAPos);
+        servoB.setPosition(servoBPos);
 
 		/*
 		 * Telemetry for debugging
@@ -47,6 +61,8 @@ public class ServoTestBench extends OpMode {
         try{
             robot.waitForTick(60);
         }
-        catch(Exception e) {}
+        catch(Exception e) {
+            telemetry.addLine("Missed wait time!");
+        }
     }
 }
