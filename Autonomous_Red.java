@@ -38,18 +38,20 @@ public class Autonomous_Red extends LinearOpMode {
         VuforiaTrackables relicTrackables = vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
 
-        // get visible pictograph
-        relicTrackables.activate();
-        for(int i = 0; i < 20; i++) pictograph = RelicRecoveryVuMark.from(relicTemplate);
-
         // send telemetry message to signify robot waiting
         telemetry.addData("Status", "Slouching");
-        telemetry.addData("VuMark", "%s visible", pictograph);
         telemetry.update();
 
         waitForStart(); // wait for match to start (driver presses PLAY)
 
         // ---------- match code ----------
+
+        // get visible pictograph
+        relicTrackables.activate();
+        for(int i = 0; i < 500; i++) pictograph = RelicRecoveryVuMark.from(relicTemplate);
+        telemetry.addData("VuMark", "%s visible", pictograph);
+        telemetry.update();
+        sleep(1000);
 
         robot.ColorSense.setPosition(0.65); // arm straight up
         sleep(1000);
