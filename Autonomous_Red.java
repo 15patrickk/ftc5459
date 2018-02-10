@@ -45,11 +45,17 @@ public class Autonomous_Red extends LinearOpMode {
         waitForStart(); // wait for match to start (driver presses PLAY)
 
         // ---------- match code ----------
+        relicTrackables.activate();
+        sleep(1000); // wait for Vuforia to stabilize
 
         // get visible pictograph
-        relicTrackables.activate();
-        for(int i = 0; i < 500; i++) pictograph = RelicRecoveryVuMark.from(relicTemplate);
-        telemetry.addData("VuMark", "%s visible", pictograph);
+        int i;
+        for(i = 1; i <= 148576; i++) {
+            pictograph = RelicRecoveryVuMark.from(relicTemplate);
+            if(pictograph != RelicRecoveryVuMark.UNKNOWN) break;
+        }
+
+        telemetry.addData("VuMark", "%s visible after %d readings", pictograph, i);
         telemetry.update();
         sleep(1000);
 
@@ -64,7 +70,7 @@ public class Autonomous_Red extends LinearOpMode {
         sleep(500);
 
         if(red > blue) { // facing red ball - move left/CCW to knock off red ball
-            telemetry.addData("Color", "blue");
+            telemetry.addData("Color", "red");
             telemetry.update();
             sleep(1000);
             robot.TwistyThingy.setPosition(0);
@@ -73,7 +79,7 @@ public class Autonomous_Red extends LinearOpMode {
             sleep(1500);
         }
         if(red < blue) { // facing blue ball - move right/CW to knock off blue ball
-            telemetry.addData("Color","red");
+            telemetry.addData("Color","blue");
             telemetry.update();
             sleep(1000);
             robot.TwistyThingy.setPosition(0.3); // rotate right
@@ -90,7 +96,7 @@ public class Autonomous_Red extends LinearOpMode {
 
         // fixes hang between autonomous and teleop
         robot.CS.enableLed(false);
-        sleep(400);
+        sleep(1200);
 
         robot.FrontMotorRight.setPower(0);
         robot.FrontMotorLeft.setPower(0);
@@ -103,15 +109,16 @@ public class Autonomous_Red extends LinearOpMode {
                 break;
 
             case CENTER:
-                robot.FrontMotorRight.setPower(.25);
-                robot.FrontMotorLeft.setPower(.35);
+                // KEVIN: commented this out while testing getting off the ramp. -PK
+//                robot.FrontMotorRight.setPower(.25);
+//                robot.FrontMotorLeft.setPower(.35);
                 sleep(800);
                 break;
 
             case RIGHT:
                 break;
 
-            default:
+            default: // UNKNOWN
                 // code if nothing is detected...
                 break;
         }

@@ -51,7 +51,7 @@ public class Vision extends LinearOpMode {
         waitForStart();
 
         relicTrackables.activate();
-
+        int readings = 0;
         while (opModeIsActive()) {
             /**
              * See if any of the instances of the relic template are currently visible.
@@ -62,10 +62,13 @@ public class Vision extends LinearOpMode {
 
             // telemetry data
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-                telemetry.addData("VuMark", "%s visible", vuMark);
+                telemetry.addData("VuMark", "%s visible after %d readings", vuMark, readings);
+                telemetry.update();
+                sleep(2000);
 
             } else {
                 telemetry.addData("VuMark", "not visible");
+                readings++;
             }
 
             telemetry.update();
