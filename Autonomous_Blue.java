@@ -21,8 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 public class Autonomous_Blue extends LinearOpMode {
     WoodyBot robot = new WoodyBot();   // Use a Pushbot's hardware
 
-    public void runOpMode() {
-        // initialize the robot hardware
+    public void runOpMode() {        // initialize the robot hardware
         robot.init(hardwareMap);
 
         // initialize Vuforia
@@ -30,18 +29,32 @@ public class Autonomous_Blue extends LinearOpMode {
         parameters.vuforiaLicenseKey = robot.vKey;
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        RelicRecoveryVuMark pictograph = null;
 
         // load the pictograph dataset
         VuforiaTrackables relicTrackables = vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
 
         // send telemetry message to signify robot waiting
-        telemetry.addData("Status", "Slouching");    //
+        telemetry.addData("Status", "Slouching");
         telemetry.update();
 
         waitForStart(); // wait for match to start (driver presses PLAY)
 
         // ---------- match code ----------
+        relicTrackables.activate();
+        sleep(1000); // wait for Vuforia to stabilize
+
+        // get visible pictograph
+        int i;
+        for(i = 1; i <= 148576; i++) {
+            pictograph = RelicRecoveryVuMark.from(relicTemplate);
+            if(pictograph != RelicRecoveryVuMark.UNKNOWN) break;
+        }
+
+        telemetry.addData("VuMark", "%s visible after %d readings", pictograph, i);
+        telemetry.update();
+        sleep(1000);
 
         robot.ColorSense.setPosition(0.65); // arm straight up
         sleep(1000);
@@ -71,22 +84,47 @@ public class Autonomous_Blue extends LinearOpMode {
             robot.ColorSense.setPosition(0.6); // retract arm
             sleep(1500);
         }
-        //robot.ColorSense.setPosition(.4);
-        sleep(100);
-        robot.FrontMotorLeft.setPower(0.52);
-        robot.FrontMotorRight.setPower(0.52);
-        sleep(1000);
-        robot.FrontMotorLeft.setPower(0);
-        robot.FrontMotorRight.setPower(0);
 
-        sleep(10);
-        robot.FrontMotorRight.setPower(-.1);
-        robot.FrontMotorLeft.setPower(-.1);
-        sleep(1000);
-        robot.FrontMotorLeft.setPower(0);
-        robot.FrontMotorRight.setPower(0);
+        robot.TwistyThingy.setPosition(0);
+        robot.ColorSense.setPosition(.61);
+        sleep(300);
 
-        robot.CS.enableLed(false); // fixes hang between autonomous and teleop
-        sleep(500);
+        // back off the ramp
+        robot.FrontMotorRight.setPower(-.25);
+        robot.FrontMotorLeft.setPower(-.25);
+
+        // fixes hang between autonomous and teleop
+        robot.CS.enableLed(false);
+        sleep(1200);
+
+        robot.FrontMotorRight.setPower(0);
+        robot.FrontMotorLeft.setPower(0);
+
+        // ---------- vision code ----------
+
+        // take different actions depending on the pictograph visible at start of autonomous
+        switch(pictograph) {
+            case LEFT:
+                break;
+
+            case CENTER:
+                // KEVIN: commented this out while testing getting off the ramp. -PK
+//                robot.FrontMotorRight.setPower(.25);
+//                robot.FrontMotorLeft.setPower(.35);
+                sleep(800);
+                break;
+
+            case RIGHT:
+                break;
+
+            default: // UNKNOWN
+                // code if nothing is detected...
+                break;
+        }
+
+        robot.FrontMotorRight.setPower(0);
+        robot.FrontMotorLeft.setPower(0);
+
+        sleep(500); // a final sleep before switching to teleop
     }
 }

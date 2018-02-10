@@ -87,10 +87,12 @@ public class Autonomous_Red extends LinearOpMode {
             robot.ColorSense.setPosition(0.6); // retract arm
             sleep(1500);
         }
+
         robot.TwistyThingy.setPosition(0);
         robot.ColorSense.setPosition(.61);
         sleep(300);
 
+        // back off the ramp
         robot.FrontMotorRight.setPower(-.25);
         robot.FrontMotorLeft.setPower(-.25);
 
